@@ -1,5 +1,5 @@
 {
-  "name": "file_a",
+  "name": "Credit Facilty",
   "description": "Regulatory Report A — sample schema (customize to your needs)",
   "sheet_name": "Sheet1",
   "header_row": 1,
@@ -7,52 +7,74 @@
 
   "fields": [
     {
-      "name": "transaction_id",
-      "column": "Transaction ID",
-      "data_type": "string",
-      "category": "required",
-      "max_length": 20,
-      "min_length": 1,
-      "description": "Unique transaction identifier"
-    },
-    {
-      "name": "report_date",
-      "column": "Report Date",
-      "data_type": "date",
-      "category": "required",
-      "date_format": "%Y-%m-%d",
-      "description": "Date of the report"
-    },
-    {
-      "name": "transaction_type",
-      "column": "Transaction Type",
-      "data_type": "string",
-      "category": "required",
-      "catalog": "transaction_types",
-      "description": "Type of transaction"
-    },
-    {
-      "name": "amount",
-      "column": "Amount",
-      "data_type": "float",
-      "category": "required",
-      "min_value": 0,
-      "description": "Transaction amount"
-    },
-    {
-      "name": "currency_code",
-      "column": "Currency",
+      "name": "1. Segment Identifier",
+      "column": "Segment Identifier",
       "data_type": "string",
       "category": "required",
       "catalog": "currency_codes",
-      "max_length": 3,
-      "min_length": 3,
-      "description": "ISO 4217 currency code"
+      "max_length": 4,
+      "min_length": 4,
+      "description": "Must contain the Value CNCF"
     },
     {
-      "name": "country_code",
-      "column": "Country",
+      "name": "2. Data Provider ID",
+      "column": "Data Provider ID",
       "data_type": "string",
+      "category": "required",
+      "max_length": 10,
+      "min_length": 10,
+      "description": "Unique identifier for the data provider"
+    },
+    {
+      "name": "3. Previous Data Provider ID",
+      "column": "Previous Data Provider ID",
+      "data_type": "string",
+      "category": "optional",
+      "max_length": 10,
+      "min_length": 10,
+      "description": "Unique identifier for the previous data provider"
+    },
+    {
+      "name": "4. Data Provider Branch ID",
+      "column": "Data Provider Branch ID",
+      "data_type": "string",
+      "category": "required",
+      "max_length": 4,
+      "min_length": 4,
+      "description": "Conatain internal branch code of the data provider"
+    },
+    {
+      "name": "5. Previous Data Provider Branch ID",
+      "column": "Previous Data Provider Branch ID",
+      "data_type": "string",
+      "category": "optional",
+      "max_length": 4,
+      "min_length": 4,
+      "description": "Internal branch code of the previous data provider"
+    },
+    {
+      "name": "6. Credit Facility Account Number",
+      "column": "Credit Facility Account Number",
+      "data_type": "string",
+      "category": "required",
+      "min_length": 25,
+      "max_length": 25,
+      "description": "Credit Facility Account Number/Card Number assigned by the Data Provider"
+    },
+    {
+      "name": "7. Consent Status",
+      "column": "Consent Status",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "consent_statuses",
+      "max_length": 3,
+      "min_length": 3,
+      "description": "Must contain the status of the consent as provided by the Subject to the Data provider"
+    },
+    {
+      "name": "8. Consent Expiry Date",
+      "column": "Consent Expiry Date",
+      "data_type": "date",
       "category": "required",
       "catalog": "country_codes",
       "max_length": 2,
