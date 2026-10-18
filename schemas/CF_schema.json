@@ -8,7 +8,7 @@
   "fields": [
     {
       "name": "1. Segment Identifier",
-      "column": "Segment Identifier",
+      "column": "Segment_Identifier",
       "data_type": "string",
       "category": "required",
       "catalog": "currency_codes",
@@ -17,7 +17,7 @@
     },
     {
       "name": "2. Data Provider ID",
-      "column": "Data Provider ID",
+      "column": "Data_Provider_ID",
       "data_type": "string",
       "category": "required",
       "length": 10,
@@ -25,7 +25,7 @@
     },
     {
       "name": "3. Previous Data Provider ID",
-      "column": "Previous Data Provider ID",
+      "column": "Previous_Data_Provider_ID",
       "data_type": "string",
       "category": "optional",
       "length": 10,
@@ -33,7 +33,7 @@
     },
     {
       "name": "4. Data Provider Branch ID",
-      "column": "Data Provider Branch ID",
+      "column": "Data_Provider_Branch_ID",
       "data_type": "string",
       "category": "required",
       "length": 4,
@@ -41,7 +41,7 @@
     },
     {
       "name": "5. Previous Data Provider Branch ID",
-      "column": "Previous Data Provider Branch ID",
+      "column": "Previous_Data_Provider_Branch_ID",
       "data_type": "string",
       "category": "optional",
       "length": 4,
@@ -49,7 +49,7 @@
     },
     {
       "name": "6. Credit Facility Account Number",
-      "column": "Credit Facility Account Number",
+      "column": "Credit_Facility_Account_Number",
       "data_type": "string",
       "category": "required",
       "length": 25,
@@ -57,7 +57,7 @@
     },
     {
       "name": "7. Consent Status",
-      "column": "Consent Status",
+      "column": "Consent_Status",
       "data_type": "string",
       "category": "required",
       "catalog": "consent_statuses",
@@ -66,7 +66,7 @@
     },
     {
       "name": "8. Consent Expiry Date",
-      "column": "Consent Expiry Date",
+      "column": "Consent_Expiry_Date",
       "data_type": "date",
       "category": "required",
       "date_format": "%m%d%Y",
@@ -76,7 +76,7 @@
 
     {
       "name": "9. Primary Card Number",
-      "column": "Primary Card Number",
+      "column": "Primary_Card_Number",
       "data_type": "string",
       "category": "optional",
       "length": 16,
@@ -84,7 +84,7 @@
     },
     {
       "name": "10. Previous Credit Facility Account Number",
-      "column": "Previous Credit Facility Account Number",
+      "column": "Previous_Credit_Facility_Account_Number",
       "data_type": "string",
       "category": "optional",
       "length": 25,
@@ -93,7 +93,7 @@
 
     {
       "name": "11. Previous Primary Card Number",
-      "column": "Previous Primary Card Number",
+      "column": "Previous_Primary_Card_Number",
       "data_type": "string",
       "category": "optional",
       "length": 16,
@@ -101,7 +101,7 @@
     },
     {
       "name": "12. Approval Date",
-      "column": "Approval Date",
+      "column": "Approval_Date",
       "data_type": "date",
       "category": "required",
       "date_format": "%m%d%Y",
@@ -110,11 +110,171 @@
     },
     {
       "name": "13. Credit Limit/Approval Amount",
-      "column": "Credit Limit/Approval Amount",
+      "column": "Credit_Limit/Approval_Amount",
       "data_type": "integer",
       "category": "required",
       "length": 20,
       "description": "Credit limit or approval amount "
+    },
+    {
+      "name": "14. Amount of Installment",
+      "column": "Amount_of_Installment",
+      "data_type": "optional",
+      "category": "required",
+      "length": 20,
+      "description": "Amount of each installment"
+    },
+    {
+      "name": "15. Highest Credit",
+      "column": "Highest_Credit",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Highest credit amount"
+    },
+    {
+      "name": "16. Currency",
+      "column": "Currency",
+      "data_type": "string",
+      "catalog": "currency_codes",
+      "category": "required",
+      "length": 3,
+      "description": "Currency code"
+    },
+    {
+      "name": "17. Liability Indicator",
+      "column": "Liability_Indicator",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "liability_indicators",
+      "length": 3,
+      "description": "Indicator for liability"
+    },
+    {
+      "name": "18. Credit Facility Type",
+      "column": "Credit_Facility_Type",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "credit_facility_types",
+      "length": 3,
+      "description": "Type of credit facility"
+    },
+    {
+      "name": "19. Term of Loan",
+      "column": "Term_of_Loan",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 3,
+      "description": "Term loan in months"
+    },
+    {
+      "name": "20. Repayment Type",
+      "column": "Repayment_Type",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "repayment_types",
+      "length": 3,
+      "description": "Type of repayment"
+    },
+    {
+      "name": "21. First Disbursement Date",
+      "column": "First_Disbursement_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date of first disbursement"
+    },
+    {
+      "name": "22. Credit Facility Account Balance",
+      "column": "Credit_Facility_Account_Balance",
+      "data_type": "integer",
+      "category": "required",
+      "catalog": "repayment_types",
+      "length": 20,
+      "description": "Entire Amount including overdue portion"
+    },
+    {
+      "name": "23. Last Amount Paid",
+      "column": "Last_Amount_Paid",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Amount paid in the last transaction"
+    },
+    {
+      "name": "24. Amount Overdue",
+      "column": "Amount_Overdue",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Amount that is overdue"
+    },
+    {
+      "name": "25. Number of Days Past Due",
+      "column": "Number_of_Days_Past_Due",
+      "data_type": "integer",
+      "category": "required",
+      "length": 4,
+      "description": "Number of days the payment is past due"
+    },
+    {
+      "name": "26. Number of Payments / Installments Overdue",
+      "column": "Number_of_Payments_Overdue",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 3,
+      "description": "Number of payments or installments that are overdue"
+    },
+    {
+      "name": "27. Asset Classification",
+      "column": "Asset_Classification",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "asset_classifications",
+      "length": 3,
+      "description": "Classification of the asset"
+    },
+    {
+      "name": "28. Account Status",
+      "column": "Account_Status",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "account_statuses",
+      "length": 3,
+      "description": "Account status for the facality"
+    },
+    {
+      "name": "25. Number of Days Past Due",
+      "column": "Number_of_Days_Past_Due",
+      "data_type": "integer",
+      "category": "required",
+      "length": 4,
+      "description": "Number of days the payment is past due"
+    },
+    {
+      "name": "25. Number of Days Past Due",
+      "column": "Number_of_Days_Past_Due",
+      "data_type": "integer",
+      "category": "required",
+      "length": 4,
+      "description": "Number of days the payment is past due"
+    },
+    {
+      "name": "25. Number of Days Past Due",
+      "column": "Number_of_Days_Past_Due",
+      "data_type": "integer",
+      "category": "required",
+      "length": 4,
+      "description": "Number of days the payment is past due"
+    },
+    {
+      "name": "25. Number of Days Past Due",
+      "column": "Number_of_Days_Past_Due",
+      "data_type": "integer",
+      "category": "required",
+      "length": 4,
+      "description": "Number of days the payment is past due"
     }
   ]
 }

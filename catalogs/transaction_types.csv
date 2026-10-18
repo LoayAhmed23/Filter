@@ -1,7 +1,0 @@
-code,description
-DOMESTIC,Domestic transaction
-INTERNATIONAL,International transaction
-TRANSFER,Internal transfer
-PAYMENT,Payment
-DEPOSIT,Deposit
-WITHDRAWAL,Withdrawal
