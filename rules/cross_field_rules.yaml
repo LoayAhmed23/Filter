@@ -1,0 +1,33 @@
+# =============================================================================
+# Cross-field validation rules
+# =============================================================================
+# Each rule defines a relationship between two or more fields.
+#
+# Fields:
+#   rule_id:      Unique identifier for the rule
+#   description:  Human-readable explanation
+#   condition:    (Optional) Python expression — if it evaluates to False,
+#                 the assertion is skipped. Field names are variables.
+#   assertion:    Python expression that must evaluate to True.
+#   severity:     ERROR or WARNING (default: ERROR)
+#
+# IMPORTANT: Field names in expressions use underscores instead of spaces/dashes.
+#            e.g., "Transaction Type" → transaction_type
+
+- rule_id: R001
+  description: "Domestic transactions must have local country code"
+  condition: "transaction_type == 'DOMESTIC'"
+  assertion: "country_code == 'SA'"
+  severity: ERROR
+
+- rule_id: R002
+  description: "International transactions must NOT have local country code"
+  condition: "transaction_type == 'INTERNATIONAL'"
+  assertion: "country_code != 'SA'"
+  severity: ERROR
+
+- rule_id: R003
+  description: "High-value transactions must have remarks"
+  condition: "amount is not None and float(amount) > 1000000"
+  assertion: "remarks is not None and str(remarks).strip() != ''"
+  severity: WARNING

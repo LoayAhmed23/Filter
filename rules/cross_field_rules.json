@@ -1,0 +1,23 @@
+[
+  {
+    "rule_id": "R001",
+    "description": "Domestic transactions must have local country code",
+    "condition": "transaction_type == 'DOMESTIC'",
+    "assertion": "country_code == 'SA'",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R002",
+    "description": "International transactions must NOT have local country code",
+    "condition": "transaction_type == 'INTERNATIONAL'",
+    "assertion": "country_code != 'SA'",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R003",
+    "description": "High-value transactions must have remarks",
+    "condition": "amount is not None and float(amount) > 1000000",
+    "assertion": "remarks is not None and str(remarks).strip() != ''",
+    "severity": "WARNING"
+  }
+]
