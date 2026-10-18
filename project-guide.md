@@ -67,8 +67,7 @@ Each field supports these properties:
 | `column` | ✅ | **Excel column header** exactly as it appears |
 | `data_type` | | `string`, `integer`, `float`, `date`, `boolean` |
 | `category` | ✅ | `required`, `optional`, or `group:<name>` |
-| `max_length` | | Max string length |
-| `min_length` | | Min string length |
+| `length` | | Exact character length the value must be |
 | `pattern` | | Regex the value must match |
 | `catalog` | | Name of CSV file in `catalogs/` (without `.csv`) |
 | `date_format` | | Python strftime format (default: `%Y-%m-%d`) |
@@ -84,8 +83,7 @@ Each field supports these properties:
   "data_type": "string",
   "category": "required",
   "catalog": "currency_codes",
-  "max_length": 3,
-  "min_length": 3,
+  "length": 3,
   "description": "ISO 4217 currency code"
 }
 ```
