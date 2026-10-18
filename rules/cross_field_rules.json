@@ -2,8 +2,8 @@
   {
     "rule_id": "R001",
     "description": "Domestic transactions must have local country code",
-    "condition": "transaction_type == 'DOMESTIC'",
-    "assertion": "country_code == 'SA'",
+    "condition": "'Liabilty Indicator' == '003'",
+    "assertion": "'Primary Card Number' is not None",
     "severity": "ERROR"
   },
   {

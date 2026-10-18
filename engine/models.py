@@ -25,8 +25,7 @@ class FieldSchema:
     column: str              # Excel column letter or header name
     data_type: str           # string, integer, float, date, boolean
     category: str            # 'required', 'optional', or 'group:<group_name>'
-    max_length: int | None = None
-    min_length: int | None = None
+    length: int | None = None
     pattern: str | None = None        # regex pattern
     catalog: str | None = None        # name of catalog file (without extension)
     date_format: str | None = None    # e.g. '%Y-%m-%d'

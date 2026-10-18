@@ -70,40 +70,22 @@ def validate_field(
         errors.append(type_error)
         return errors  # skip further checks if type is wrong
 
-    # --- Length checks ---
-    if field.max_length is not None and len(str_value) > field.max_length:
+    # --- Length check ---
+    if field.length is not None and len(str_value) != field.length:
         errors.append(
             ValidationError(
                 file_name=file_name,
                 sheet=sheet,
                 row=row,
                 field_name=field.name,
-                rule_id="MAX_LENGTH",
+                rule_id="LENGTH",
                 severity=Severity.ERROR,
                 message=(
-                    f"Field '{field.name}' exceeds max length "
-                    f"{field.max_length} (actual: {len(str_value)})."
+                    f"Field '{field.name}' must be exactly "
+                    f"{field.length} characters (actual: {len(str_value)})."
                 ),
                 actual_value=str_value,
-                expected=f"<= {field.max_length} characters",
-            )
-        )
-
-    if field.min_length is not None and len(str_value) < field.min_length:
-        errors.append(
-            ValidationError(
-                file_name=file_name,
-                sheet=sheet,
-                row=row,
-                field_name=field.name,
-                rule_id="MIN_LENGTH",
-                severity=Severity.ERROR,
-                message=(
-                    f"Field '{field.name}' is shorter than min length "
-                    f"{field.min_length} (actual: {len(str_value)})."
-                ),
-                actual_value=str_value,
-                expected=f">= {field.min_length} characters",
+                expected=f"exactly {field.length} characters",
             )
         )
 

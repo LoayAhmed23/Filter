@@ -76,52 +76,58 @@
       "column": "Consent Expiry Date",
       "data_type": "date",
       "category": "required",
-      "catalog": "country_codes",
-      "max_length": 2,
-      "min_length": 2,
-      "description": "ISO 3166-1 alpha-2 country code"
+      "date_format": "%m%d%Y",
+      "max_length": 8,
+      "min_length": 8,
+      "description": "Date"
     },
 
     {
-      "name": "remarks",
-      "column": "Remarks",
+      "name": "9. Primary Card Number",
+      "column": "Primary Card Number",
       "data_type": "string",
       "category": "optional",
-      "max_length": 500,
-      "description": "Free-text remarks"
+      "max_length": 16,
+      "min_length": 16,
+      "description": "Primary card number"
     },
     {
-      "name": "reference_number",
-      "column": "Reference No.",
+      "name": "10. Previous Credit Facility Account Number",
+      "column": "Previous Credit Facility Account Number",
       "data_type": "string",
       "category": "optional",
-      "pattern": "^REF-[0-9]{6,10}$",
-      "description": "Optional reference in format REF-NNNNNN"
+      "max_length": 25,
+      "min_length": 25,
+      "description": "Previous credit facility account number"
     },
 
     {
-      "name": "agent_code",
-      "column": "Agent Code",
+      "name": "11. Previous Primary Card Number",
+      "column": "Previous Primary Card Number",
       "data_type": "string",
-      "category": "group:agent_info",
-      "catalog": "agent_codes",
-      "description": "Agent identifier (part of agent_info group)"
+      "category": "optional",
+      "max_length": 16,
+      "min_length": 16,
+      "description": "Previous primary card number"
     },
     {
-      "name": "agent_name",
-      "column": "Agent Name",
-      "data_type": "string",
-      "category": "group:agent_info",
-      "max_length": 100,
-      "description": "Agent full name (part of agent_info group)"
+      "name": "12. Approval Date",
+      "column": "Approval Date",
+      "data_type": "date",
+      "category": "required",
+      "date_format": "%m%d%Y",
+      "max_length": 8,
+      "min_length": 8,
+      "description": "Date of approval"
     },
     {
-      "name": "agent_branch",
-      "column": "Agent Branch",
-      "data_type": "string",
-      "category": "group:agent_info",
-      "catalog": "branch_codes",
-      "description": "Agent branch code (part of agent_info group)"
+      "name": "13. Credit Limit/Approval Amount",
+      "column": "Credit Limit/Approval Amount",
+      "data_type": "integer",
+      "category": "required",
+      "max_length": 20,
+      "min_length": 20,
+      "description": "Credit limit or approval amount "
     }
   ]
 }

@@ -1,0 +1,101 @@
+{
+  "name": "file_a",
+  "description": "Regulatory Report A — sample schema (customize to your needs)",
+  "sheet_name": "Sheet1",
+  "header_row": 1,
+  "data_start_row": 2,
+
+  "fields": [
+    {
+      "name": "transaction_id",
+      "column": "Transaction ID",
+      "data_type": "string",
+      "category": "required",
+      "length": 20,
+      "description": "Unique transaction identifier"
+    },
+    {
+      "name": "report_date",
+      "column": "Report Date",
+      "data_type": "date",
+      "category": "required",
+      "date_format": "%Y-%m-%d",
+      "description": "Date of the report"
+    },
+    {
+      "name": "transaction_type",
+      "column": "Transaction Type",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "transaction_types",
+      "description": "Type of transaction"
+    },
+    {
+      "name": "amount",
+      "column": "Amount",
+      "data_type": "float",
+      "category": "required",
+      "min_value": 0,
+      "description": "Transaction amount"
+    },
+    {
+      "name": "currency_code",
+      "column": "Currency",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "currency_codes",
+      "length": 3,
+      "description": "ISO 4217 currency code"
+    },
+    {
+      "name": "country_code",
+      "column": "Country",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "country_codes",
+      "length": 2,
+      "description": "ISO 3166-1 alpha-2 country code"
+    },
+
+    {
+      "name": "remarks",
+      "column": "Remarks",
+      "data_type": "string",
+      "category": "optional",
+      "description": "Free-text remarks"
+    },
+    {
+      "name": "reference_number",
+      "column": "Reference No.",
+      "data_type": "string",
+      "category": "optional",
+      "pattern": "^REF-[0-9]{6,10}$",
+      "description": "Optional reference in format REF-NNNNNN"
+    },
+
+    {
+      "name": "agent_code",
+      "column": "Agent Code",
+      "data_type": "string",
+      "category": "group:agent_info",
+      "catalog": "agent_codes",
+      "description": "Agent identifier (part of agent_info group)"
+    },
+    {
+      "name": "agent_name",
+      "column": "Agent Name",
+      "data_type": "string",
+      "category": "group:agent_info",
+      "length": 100,
+      "description": "Agent full name (part of agent_info group)"
+    },
+    {
+      "name": "agent_branch",
+      "column": "Agent Branch",
+      "data_type": "string",
+      "category": "group:agent_info",
+      "catalog": "branch_codes",
+      "description": "Agent branch code (part of agent_info group)"
+    }
+  ]
+}
