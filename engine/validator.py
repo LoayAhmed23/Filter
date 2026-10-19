@@ -82,10 +82,10 @@ class FileValidator:
             row_data: dict[str, Any] = {}
             for field in self.schema.fields:
                 col = col_map.get(field.name)
-                if col is not None:
-                    row_data[field.name] = pandas_row.get(col)
-                else:
-                    row_data[field.name] = None
+                val = pandas_row.get(col) if col is not None else None
+                row_data[field.name] = val
+                if field.column and field.column not in row_data:
+                    row_data[field.column] = val
 
             # ── Layer 2: Field-level checks ──
             for field in self.schema.fields:

@@ -32,14 +32,20 @@ _SAFE_BUILTINS = {
 
 def _make_eval_context(row_data: dict[str, Any]) -> dict[str, Any]:
     """Build a safe evaluation namespace from row data."""
+    import re
+
     ctx = dict(_SAFE_BUILTINS)
-    # Expose each field as a variable (replace spaces/dashes with underscores)
+    # Expose each field as a variable (replace spaces/dashes/slashes with underscores)
     for key, val in row_data.items():
-        safe_key = key.replace(" ", "_").replace("-", "_")
-        # Convert NaN to None for cleaner expressions
-        if isinstance(val, float) and pd.isna(val):
+        safe_key = key.replace(" ", "_").replace("-", "_").replace("/", "_")
+        # Convert NaN or empty string to None for cleaner expressions
+        if (isinstance(val, float) and pd.isna(val)) or (isinstance(val, str) and val.strip() == ""):
             val = None
         ctx[safe_key] = val
+        # Strip leading numbers/dots e.g. "17._Liability_Indicator" -> "Liability_Indicator"
+        clean_key = re.sub(r"^\d+[\._\s]*", "", safe_key)
+        if clean_key:
+            ctx[clean_key] = val
     return ctx
 
 

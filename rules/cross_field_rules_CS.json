@@ -1,0 +1,9 @@
+[
+  {
+    "rule_id": "R001",
+    "description": "Primary Card Number is required when Liability Indicator is 003",
+    "condition": "Liability_Indicator == '003'",
+    "assertion": "Primary_Card_Number is not None",
+    "severity": "ERROR"
+  }
+]

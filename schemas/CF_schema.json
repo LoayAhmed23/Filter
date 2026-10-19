@@ -1,17 +1,16 @@
 {
   "name": "Credit Facilty",
   "description": "Regulatory Report A — sample schema (customize to your needs)",
-  "sheet_name": "Sheet1",
+  "sheet_name": 0,
   "header_row": 1,
   "data_start_row": 2,
-
   "fields": [
     {
       "name": "1. Segment Identifier",
       "column": "Segment_Identifier",
       "data_type": "string",
       "category": "required",
-      "catalog": "currency_codes",
+      "catalog": "segment",
       "length": 4,
       "description": "Must contain the Value CNCF"
     },
@@ -73,7 +72,6 @@
       "length": 8,
       "description": "Date"
     },
-
     {
       "name": "9. Primary Card Number",
       "column": "Primary_Card_Number",
@@ -90,7 +88,6 @@
       "length": 25,
       "description": "Previous credit facility account number"
     },
-
     {
       "name": "11. Previous Primary Card Number",
       "column": "Previous_Primary_Card_Number",
@@ -119,7 +116,7 @@
     {
       "name": "14. Amount of Installment",
       "column": "Amount_of_Installment",
-      "data_type": "optional",
+      "data_type": "integer",
       "category": "required",
       "length": 20,
       "description": "Amount of each installment"
@@ -190,7 +187,6 @@
       "column": "Credit_Facility_Account_Balance",
       "data_type": "integer",
       "category": "required",
-      "catalog": "repayment_types",
       "length": 20,
       "description": "Entire Amount including overdue portion"
     },
@@ -245,36 +241,159 @@
       "description": "Account status for the facality"
     },
     {
-      "name": "25. Number of Days Past Due",
-      "column": "Number_of_Days_Past_Due",
-      "data_type": "integer",
-      "category": "required",
-      "length": 4,
-      "description": "Number of days the payment is past due"
+      "name": "29. Date Latest Payment Received",
+      "column": "Date_Latest_Payment_Received",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date of Latest Payment Received"
     },
     {
-      "name": "25. Number of Days Past Due",
-      "column": "Number_of_Days_Past_Due",
-      "data_type": "integer",
-      "category": "required",
-      "length": 4,
-      "description": "Number of days the payment is past due"
+      "name": "30. Credit Facility Amendment Date",
+      "column": "Credit_Facility_Amendment_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date of Credit Facility Amendment"
     },
     {
-      "name": "25. Number of Days Past Due",
-      "column": "Number_of_Days_Past_Due",
-      "data_type": "integer",
-      "category": "required",
-      "length": 4,
-      "description": "Number of days the payment is past due"
+      "name": "31. Credit Facility Write-Off Date",
+      "column": "Credit_Facility_Write_Off_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date of Credit Facility Write-Off"
     },
     {
-      "name": "25. Number of Days Past Due",
-      "column": "Number_of_Days_Past_Due",
-      "data_type": "integer",
+      "name": "32. Secured Indicator",
+      "column": "Secured_Indicator",
+      "data_type": "string",
       "category": "required",
+      "catalog": "secured_indicators",
+      "length": 3,
+      "description": "Indicates if the facility is secured"
+    },
+    {
+      "name": "33. Facility Nature Indicator",
+      "column": "Facility_Nature_Indicator",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "facility_nature_indicators",
+      "length": 3,
+      "description": "Classification of the asset"
+    },
+    {
+      "name": "34. Amount written off",
+      "column": "Amount_Written_Off",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Amount that has been written off"
+    },
+    {
+      "name": "35. Reason for Write-Off",
+      "column": "Reason_for_Write_Off",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "write_off_reasons",
+      "length": 3,
+      "description": "Reason for the write-off"
+    },
+    {
+      "name":"36. Amount Forgiven",
+      "column": "Amount_Forgiven",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Amount that has been forgiven"
+    },
+    {"name":"37. Funding Source",
+      "column": "Funding_Source",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "funding_sources",
+      "length": 3,
+      "description": "Source of funding for the facility"
+    },
+    {"name":"38. Account Closing Date",
+      "column": "Account_Closing_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date the account was closed"
+    },
+    {
+      "name": "39. Amount of Unearned Interest",
+      "column": "Amount_of_Unearned_Interest",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 10,
+      "description": "Amount of unearned interest"
+    },
+    {
+      "name":"40. Special Comments",
+      "column": "Special_Comments",
+      "data_type": "string",
+      "catalog": "special_comments",
+      "category": "optional",
+      "length": 3,
+      "description": "Any special comments regarding the facility"
+    },
+    {
+      "name":"41. Main Action Code",
+      "column": "Main_Action_Code",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "main_action_codes",
       "length": 4,
-      "description": "Number of days the payment is past due"
+      "description": "Main action code for the facility"
+    },
+    {
+      "name": "42. Sub Action Code",
+      "column": "Sub_Action_Code",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "sub_action_codes",
+      "length": 4,
+      "description": "Sub action code for the facility"
+    },
+    {
+      "name": "43. Action Date",
+      "column": "Action_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date of the action"
+    },
+    {"name": "44. Number of Installments",
+      "column": "Number_of_Installments",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 3,
+      "description": "Number of installments"
+    },
+    {
+      "name": "45. Collateral Amount 1",
+      "column": "Collateral_Amount_1",
+      "data_type": "integer",
+      "category": "group:collateral",
+      "length": 20,
+      "description": "Amount of collateral 1"
+    },
+    {
+      "name": "46. Collateral Type 1",
+      "column": "Collateral_Type_1",
+      "data_type": "string",
+      "category": "group:collateral",
+      "catalog": "collateral_types",
+      "length": 3,
+      "description": "Type of collateral 1"
     }
+    
   ]
 }
