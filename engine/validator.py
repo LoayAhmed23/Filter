@@ -5,7 +5,6 @@ import logging
 from pathlib import Path
 from typing import Any
 
-import pandas as pd
 
 from engine.catalog_validator import validate_catalog
 from engine.cross_field_validator import validate_cross_field
@@ -24,9 +23,9 @@ class FileValidator:
     Usage::
 
         validator = FileValidator(
-            schema_path=Path("schemas/file_a.yaml"),
+            schema_path=Path("schemas/file_a.json"),
             catalog_dir=Path("catalogs"),
-            rules_path=Path("rules/cross_field_rules_a.yaml"),
+            rules_path=Path("rules/cross_field_rules_a.json"),
         )
         errors = validator.validate(Path("data/report_a.xlsx"))
     """

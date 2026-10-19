@@ -1,7 +1,6 @@
 """Error reporting — output validation results to various formats."""
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pandas as pd
@@ -56,17 +55,4 @@ def save_to_excel(errors: list[ValidationError], output_path: Path) -> None:
     """
     df = errors_to_dataframe(errors)
     df.to_excel(output_path, index=False, sheet_name="Validation Errors")
-    print(f"\n📄  Error report saved to: {output_path}")
-
-
-def save_to_json(errors: list[ValidationError], output_path: Path) -> None:
-    """Save validation errors to a JSON file.
-
-    Args:
-        errors: List of validation errors.
-        output_path: Path for the output JSON file.
-    """
-    data = [e.to_dict() for e in errors]
-    with open(output_path, "w", encoding="utf-8") as fh:
-        json.dump(data, fh, indent=2, ensure_ascii=False)
     print(f"\n📄  Error report saved to: {output_path}")

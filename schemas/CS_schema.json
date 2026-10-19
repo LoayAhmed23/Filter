@@ -11,7 +11,6 @@
       "column": "Segment_Identifier",
       "data_type": "string",
       "category": "required",
-      "catalog": "CS_segment",
       "length": 4,
       "description": "Must contain the value CNCS"
     },

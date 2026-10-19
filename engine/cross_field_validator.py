@@ -18,7 +18,6 @@ _SAFE_BUILTINS = {
     "int": int,
     "float": float,
     "str": str,
-    "bool": bool,
     "abs": abs,
     "min": min,
     "max": max,
@@ -74,12 +73,12 @@ def validate_cross_field(
     try:
         # Check condition first (if provided)
         if rule.condition:
-            condition_met = eval(rule.condition, {"__builtins__": {}}, ctx)  # noqa: S307
+            condition_met = eval(rule.condition, {"__builtins__": {}}, ctx)
             if not condition_met:
                 return None  # condition not met, skip assertion
 
         # Evaluate assertion
-        result = eval(rule.assertion, {"__builtins__": {}}, ctx)  # noqa: S307
+        result = eval(rule.assertion, {"__builtins__": {}}, ctx)
         if result:
             return None  # assertion passed
 

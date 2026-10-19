@@ -10,7 +10,6 @@
       "column": "Segment_Identifier",
       "data_type": "string",
       "category": "required",
-      "catalog": "CF_segment",
       "length": 4,
       "description": "Must contain the Value CNCF"
     },
@@ -108,7 +107,7 @@
     },
     {
       "name": "13. Credit Limit/Approval Amount",
-      "column": "Credit_Limit/Approval_Amount",
+      "column": "Credit_Limit_Approval_Amount",
       "data_type": "integer",
       "category": "required",
       "length": 20,

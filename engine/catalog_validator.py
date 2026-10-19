@@ -38,9 +38,6 @@ def validate_catalog(
         return None
 
     if str_value not in catalog_values:
-        # Build a preview of allowed values for the error message
-        preview = sorted(catalog_values)[:10]
-        suffix = "..." if len(catalog_values) > 10 else ""
         return ValidationError(
             file_name=file_name,
             sheet=sheet,
@@ -53,6 +50,5 @@ def validate_catalog(
                 f"catalog '{field.catalog}'."
             ),
             actual_value=str_value,
-            expected=f"one of {preview}{suffix}",
         )
     return None

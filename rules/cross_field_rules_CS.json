@@ -82,5 +82,11 @@
     "condition": "National_ID is not None",
     "assertion": "Gender == ('002' if int(National_ID[12]) % 2 == 0 else '001')",
     "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R013",
+    "description": "Make sure Segment_Identifier is CNCS",
+    "assertion": "Segment_Identifier == 'CNCS'",
+    "severity": "ERROR"
   }
 ]

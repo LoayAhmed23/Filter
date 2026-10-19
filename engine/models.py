@@ -29,8 +29,6 @@ class FieldSchema:
     pattern: str | None = None        # regex pattern
     catalog: str | None = None        # name of catalog file (without extension)
     date_format: str | None = None    # e.g. '%Y-%m-%d'
-    min_value: float | None = None
-    max_value: float | None = None
     description: str = ""
 
     @property

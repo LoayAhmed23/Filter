@@ -14,8 +14,6 @@ def _is_empty(value: Any) -> bool:
     """Check whether a cell value is considered empty."""
     if value is None:
         return True
-    if isinstance(value, float) and pd.isna(value):
-        return True
     if isinstance(value, str) and value.strip() == "":
         return True
     return False
@@ -108,49 +106,6 @@ def validate_field(
                     expected=f"matches /{field.pattern}/",
                 )
             )
-
-    # --- Numeric range checks ---
-    if field.data_type in ("integer", "float"):
-        try:
-            num = float(str_value)
-        except (ValueError, TypeError):
-            num = None
-        if num is not None:
-            if field.min_value is not None and num < field.min_value:
-                errors.append(
-                    ValidationError(
-                        file_name=file_name,
-                        sheet=sheet,
-                        row=row,
-                        field_name=field.name,
-                        rule_id="MIN_VALUE",
-                        severity=Severity.ERROR,
-                        message=(
-                            f"Field '{field.name}' value {num} is below "
-                            f"minimum {field.min_value}."
-                        ),
-                        actual_value=num,
-                        expected=f">= {field.min_value}",
-                    )
-                )
-            if field.max_value is not None and num > field.max_value:
-                errors.append(
-                    ValidationError(
-                        file_name=file_name,
-                        sheet=sheet,
-                        row=row,
-                        field_name=field.name,
-                        rule_id="MAX_VALUE",
-                        severity=Severity.ERROR,
-                        message=(
-                            f"Field '{field.name}' value {num} exceeds "
-                            f"maximum {field.max_value}."
-                        ),
-                        actual_value=num,
-                        expected=f"<= {field.max_value}",
-                    )
-                )
-
     return errors
 
 
@@ -181,23 +136,6 @@ def _check_type(
                 actual_value=value,
                 expected="integer",
             )
-
-    elif dt == "float":
-        try:
-            float(value)
-        except (ValueError, TypeError):
-            return ValidationError(
-                file_name=file_name,
-                sheet=sheet,
-                row=row,
-                field_name=field.name,
-                rule_id="TYPE_FLOAT",
-                severity=Severity.ERROR,
-                message=f"Field '{field.name}' expected number, got '{value}'.",
-                actual_value=value,
-                expected="float",
-            )
-
     elif dt == "date":
         fmt = field.date_format or "%Y-%m-%d"
         str_val = str(value).strip()
@@ -220,22 +158,6 @@ def _check_type(
                     actual_value=str_val,
                     expected=f"date in format {fmt}",
                 )
-
-    elif dt == "boolean":
-        if str(value).strip().lower() not in (
-            "true", "false", "1", "0", "yes", "no",
-        ):
-            return ValidationError(
-                file_name=file_name,
-                sheet=sheet,
-                row=row,
-                field_name=field.name,
-                rule_id="TYPE_BOOLEAN",
-                severity=Severity.ERROR,
-                message=f"Field '{field.name}' expected boolean, got '{value}'.",
-                actual_value=value,
-                expected="true/false/1/0/yes/no",
-            )
 
     # 'string' type always passes
     return None

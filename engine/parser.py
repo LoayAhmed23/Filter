@@ -41,21 +41,6 @@ def parse_excel(
         )
         return pd.DataFrame(), errors
 
-    # --- Check extension ---
-    if file_path.suffix.lower() not in (".xlsx", ".xls"):
-        errors.append(
-            ValidationError(
-                file_name=file_name,
-                sheet="",
-                row=0,
-                field_name="",
-                rule_id="INVALID_EXTENSION",
-                severity=Severity.ERROR,
-                message=f"Expected .xlsx or .xls file, got '{file_path.suffix}'.",
-            )
-        )
-        return pd.DataFrame(), errors
-
     # --- Try reading the workbook ---
     try:
         # header_row is 1-indexed in schema, pandas uses 0-indexed

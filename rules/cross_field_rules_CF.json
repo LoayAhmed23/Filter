@@ -166,5 +166,11 @@
     "condition": "Collateral_Type_3 is not None and Collateral_Type_3 != '402'",
     "assertion": "Collateral_Type_3 == '402'",
     "severity": "ERROR"
+  },
+  {
+    "rule_id": "R025",
+    "description": "Make sure Segment_Identifier is CNCF",
+    "assertion": "Segment_Identifier == 'CNCF'",
+    "severity": "ERROR"
   }
 ]

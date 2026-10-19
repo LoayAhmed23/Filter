@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 from engine.validator import FileValidator
-from reporting.error_reporter import print_summary, save_to_excel, save_to_json
+from reporting.error_reporter import print_summary, save_to_excel
 
 
 def main() -> int:
@@ -32,7 +32,7 @@ def main() -> int:
         "--schema", "-s",
         type=Path,
         required=True,
-        help="Path to the YAML schema file.",
+        help="Path to the schema file.",
     )
     parser.add_argument(
         "--catalogs", "-c",
@@ -44,7 +44,7 @@ def main() -> int:
         "--rules", "-r",
         type=Path,
         default=None,
-        help="Path to the cross-field rules YAML file.",
+        help="Path to the cross-field rules file.",
     )
     parser.add_argument(
         "--output", "-o",
@@ -80,11 +80,7 @@ def main() -> int:
     print_summary(errors)
 
     if args.output:
-        ext = args.output.suffix.lower()
-        if ext == ".json":
-            save_to_json(errors, args.output)
-        else:
-            save_to_excel(errors, args.output)
+        save_to_excel(errors, args.output)
 
     # Exit code: 1 if errors, 0 if clean
     has_errors = any(e.severity.value == "ERROR" for e in errors)
@@ -92,10 +88,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    if hasattr(sys.stdout, "reconfigure"):
-        try:
-            sys.stdout.reconfigure(encoding="utf-8")
-            sys.stderr.reconfigure(encoding="utf-8")
-        except Exception:
-            pass
-    sys.exit(main())
+    main()
