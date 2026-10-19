@@ -42,8 +42,6 @@ def load_file_schema(path: Path) -> FileSchema:
                 pattern=f.get("pattern"),
                 catalog=f.get("catalog"),
                 date_format=f.get("date_format"),
-                min_value=f.get("min_value"),
-                max_value=f.get("max_value"),
                 description=f.get("description", ""),
             )
         )
