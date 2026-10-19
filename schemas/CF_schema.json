@@ -393,7 +393,235 @@
       "catalog": "collateral_types",
       "length": 3,
       "description": "Type of collateral 1"
+    },
+    {
+      "name": "47. Credit Portfolio Purchase Indicator",
+      "column": "Credit_Portfolio_Purchase_Indicator",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "credit_portfolio_purchase_indicators",
+      "length": 3,
+      "description": "Type of Credit Portfolio purchase between two agreed parties. Set to 'No' if no purchase reported"
+    },
+    {
+      "name": "48. Credit Portfolio Purchase DPID",
+      "column": "Credit_Portfolio_Purchase_DPID",
+      "data_type": "string",
+      "category": "optional",
+      "length": 10,
+      "description": "DPID of the Institution to which the credit facility has been Credit Portfolio purchased. Must be a valid DPID assigned by iscore"
+    },
+    {
+      "name": "49. Funding Reference Code",
+      "column": "Funding_Reference_Code",
+      "data_type": "string",
+      "category": "optional",
+      "pattern": "^[A-Za-z0-9]{10}-[0-9]{5}-[A-Za-z0-9]{10}$",
+      "length": 27,
+      "description": "Required if Funding Source = 002. Format: DPID 10 digits - License no. 5 digits - 11 Alpha Numeric"
+    },
+    {
+      "name": "50. Inquiry Reference Code",
+      "column": "Inquiry_Reference_Code",
+      "data_type": "string",
+      "category": "optional",
+      "length": 20,
+      "description": "Defaulted to blank"
+    },
+    {
+      "name": "51. Reserved Field",
+      "column": "Reserved_Field",
+      "data_type": "string",
+      "category": "optional",
+      "length": 3,
+      "description": "Reserved field, defaulted to blank/NULL"
+    },
+    {
+      "name": "52. Transaction Type Code",
+      "column": "Transaction_Type_Code",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "transaction_type_codes",
+      "length": 3,
+      "description": "Indicates Transaction Type Code"
+    },
+    {
+      "name": "53. Next Installment Date",
+      "column": "Next_Installment_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Due coming installment date by the subject"
+    },
+    {
+      "name": "54. Special Notified Account",
+      "column": "Special_Notified_Account",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "special_notified_accounts",
+      "length": 3,
+      "description": "Indicates whether the details reported are that of Special Notified Account"
+    },
+    {
+      "name": "55. Currency in EGP",
+      "column": "Currency_in_EGP",
+      "data_type": "string",
+      "category": "optional",
+      "length": 3,
+      "description": "Contains EGP Currency Code if Currency field is reported with code other than EGP"
+    },
+    {
+      "name": "56. Credit Limit/Approval Amount in EGP",
+      "column": "Credit_Limit_Approval_Amount_in_EGP",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Contains the Approval amount in EGP if Currency field is reported with code other than EGP"
+    },
+    {
+      "name": "57. Balance in EGP",
+      "column": "Balance_in_EGP",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Contains the Balance in EGP if Currency field is reported with code other than EGP"
+    },
+    {
+      "name": "58. Securitization Indicator",
+      "column": "Securitization_Indicator",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "securitization_indicators",
+      "length": 3,
+      "description": "Flag to identify if an account has been securitized"
+    },
+    {
+      "name": "59. Securitization Amount",
+      "column": "Securitization_Amount",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Total amount securitized for the Credit Facility. Required when Securitization Indicator is 001 or 002"
+    },
+    {
+      "name": "60. Total Installment Per Year",
+      "column": "Total_Installment_Per_Year",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Total amount of all installments for a year for the credit facility"
+    },
+    {
+      "name": "61. Number of Paid Installments",
+      "column": "Number_of_Paid_Installments",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 20,
+      "description": "Number of installments paid by the subject for credit facility"
+    },
+    {
+      "name": "62. Income Type",
+      "column": "Income_Type",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "income_types",
+      "length": 3,
+      "description": "Value to identify the income type"
+    },
+    {
+      "name": "63. Borrower Identification Code",
+      "column": "Borrower_Identification_Code",
+      "data_type": "string",
+      "category": "optional",
+      "length": 20,
+      "description": "Required when Liability Indicator is 004, 010, 011, 012, 013, 014, or 016"
+    },
+    {
+      "name": "64. Borrower Identification Issuing Authority",
+      "column": "Borrower_Identification_Issuing_Authority",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "issuing_authorities",
+      "length": 3,
+      "description": "Code of the Authority that issued the Borrower Identification Code. Required when Borrower Identification Code is reported"
+    },
+    {
+      "name": "65. Issuance Date",
+      "column": "Issuance_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Issuance date of securitization. Required when Securitization Indicator is 001 or 002"
+    },
+    {
+      "name": "66. Securitization Tenor",
+      "column": "Securitization_Tenor",
+      "data_type": "integer",
+      "category": "optional",
+      "length": 3,
+      "description": "Securitization tenor in months. Required when Securitization Indicator is 001 or 002"
+    },
+    {
+      "name": "67. Issuance No",
+      "column": "Issuance_No",
+      "data_type": "string",
+      "category": "optional",
+      "length": 90,
+      "description": "Issuance number for securitization. Required when Securitization Indicator is 001 or 002"
+    },
+    {
+      "name": "68. Issuer",
+      "column": "Issuer",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "issuers",
+      "length": 3,
+      "description": "Institution to whom the portfolio has been handed over. Required when Securitization Indicator is 001 or 002"
+    },
+    {
+      "name": "69. Collateral Type 2",
+      "column": "Collateral_Type_2",
+      "data_type": "string",
+      "category": "group:collateral2",
+      "catalog": "collateral_types",
+      "length": 3,
+      "description": "Collateral Type 2"
+    },
+    {
+      "name": "70. Collateral Amount 2",
+      "column": "Collateral_Amount_2",
+      "data_type": "integer",
+      "category": "group:collateral2",
+      "length": 20,
+      "description": "Collateral Amount 2. Required when Collateral Type 2 is reported"
+    },
+    {
+      "name": "71. Collateral Type 3",
+      "column": "Collateral_Type_3",
+      "data_type": "string",
+      "category": "group:collateral3",
+      "catalog": "collateral_types",
+      "length": 3,
+      "description": "Collateral Type 3, specified for reporting type 402 Credit Risk Guarantee Company"
+    },
+    {
+      "name": "72. Collateral Amount 3",
+      "column": "Collateral_Amount_3",
+      "data_type": "integer",
+      "category": "group:collateral3",
+      "length": 20,
+      "description": "Collateral Amount 3. Required when Collateral Type 3 is reported"
+    },
+    {
+      "name": "73. Credit Risk Guarantee Company Name",
+      "column": "Credit_Risk_Guarantee_Company_Name",
+      "data_type": "string",
+      "category": "group:collateral3",
+      "catalog": "credit_risk_guarantee_companies",
+      "length": 3,
+      "description": "Name of Credit Risk Guarantee Company. Required when Collateral Type 3 is reported as 402"
     }
-    
   ]
 }

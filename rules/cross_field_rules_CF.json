@@ -78,9 +78,93 @@
   },
   {
     "rule_id": "R012",
-    "description": "If Credit facility is other than 002,0003,004 then Number of Installment should be greater than zero",
+    "description": "If Credit facility is other than 002,003,004 then Number of Installment should be greater than zero",
     "condition": "Credit_Facility_Type not in ['002', '003', '004']",
     "assertion": "Number_of_Installments > 0",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R013",
+    "description": "If Funding Source is 002 (External Source), then Funding Reference Code is required",
+    "condition": "Funding_Source == '002'",
+    "assertion": "Funding_Reference_Code is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R014",
+    "description": "If Currency is not EGP, then Currency in EGP must be reported",
+    "condition": "Currency != 'EGP'",
+    "assertion": "Currency_in_EGP is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R015",
+    "description": "If Currency is not EGP, then Credit Limit/Approval Amount in EGP must be reported",
+    "condition": "Currency != 'EGP'",
+    "assertion": "Credit_Limit_Approval_Amount_in_EGP is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R016",
+    "description": "If Currency is not EGP, then Balance in EGP must be reported",
+    "condition": "Currency != 'EGP'",
+    "assertion": "Balance_in_EGP is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R017",
+    "description": "If Securitization Indicator is 001 or 002, then Securitization Amount must be reported",
+    "condition": "Securitization_Indicator in ['001', '002']",
+    "assertion": "Securitization_Amount is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R018",
+    "description": "If Securitization Indicator is 001 or 002, then Issuance Date must be reported",
+    "condition": "Securitization_Indicator in ['001', '002']",
+    "assertion": "Issuance_Date is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R019",
+    "description": "If Securitization Indicator is 001 or 002, then Securitization Tenor must be reported",
+    "condition": "Securitization_Indicator in ['001', '002']",
+    "assertion": "Securitization_Tenor is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R020",
+    "description": "If Securitization Indicator is 001 or 002, then Issuance No must be reported",
+    "condition": "Securitization_Indicator in ['001', '002']",
+    "assertion": "Issuance_No is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R021",
+    "description": "If Securitization Indicator is 001 or 002, then Issuer must be reported",
+    "condition": "Securitization_Indicator in ['001', '002']",
+    "assertion": "Issuer is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R022",
+    "description": "If Liability Indicator is 004, 010, 011, 012, 013, 014, or 016, then Borrower Identification Code must be reported",
+    "condition": "Liability_Indicator in ['004', '010', '011', '012', '013', '014', '016']",
+    "assertion": "Borrower_Identification_Code is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R023",
+    "description": "If Borrower Identification Code is reported, then Borrower Identification Issuing Authority is required",
+    "condition": "Borrower_Identification_Code is not None",
+    "assertion": "Borrower_Identification_Issuing_Authority is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "R024",
+    "description": "If Collateral Type 3 is reported it should be 402",
+    "condition": "Collateral_Type_3 is not None and Collateral_Type_3 != '402'",
+    "assertion": "Collateral_Type_3 == '402'",
     "severity": "ERROR"
   }
 ]
