@@ -18,24 +18,44 @@ def errors_to_dataframe(errors: list[ValidationError]) -> pd.DataFrame:
     return pd.DataFrame([e.to_dict() for e in errors])
 
 
-def print_summary(errors: list[ValidationError]) -> None:
-    """Print a human-readable summary to stdout."""
+def print_summary(errors: list[ValidationError], *, max_detail: int = 200) -> None:
+    """Print a human-readable summary to stdout.
+
+    Args:
+        errors: List of validation errors.
+        max_detail: Maximum number of individual errors to print in detail.
+            For large files this prevents flooding the console.
+    """
     if not errors:
         print("\n✅  No validation errors found.")
         return
 
-    severity_counts = {}
+    severity_counts: dict[str, int] = {}
+    rule_counts: dict[str, int] = {}
     for e in errors:
         severity_counts[e.severity.value] = severity_counts.get(e.severity.value, 0) + 1
+        rule_counts[e.rule_id] = rule_counts.get(e.rule_id, 0) + 1
 
     print(f"\n{'='*60}")
     print(f"  VALIDATION REPORT — {len(errors)} issue(s) found")
     print(f"{'='*60}")
     for sev, count in sorted(severity_counts.items()):
         print(f"  {sev}: {count}")
-    print(f"{'='*60}\n")
+    print(f"{'='*60}")
 
-    for e in errors:
+    # Show breakdown by rule
+    print(f"\n  {'Rule ID':<30} {'Count':>8}")
+    print(f"  {'-'*30} {'-'*8}")
+    for rule_id, count in sorted(rule_counts.items(), key=lambda x: -x[1]):
+        print(f"  {rule_id:<30} {count:>8}")
+    print()
+
+    # Show individual errors (capped for large files)
+    shown = min(len(errors), max_detail)
+    if shown < len(errors):
+        print(f"  Showing first {shown} of {len(errors)} errors:\n")
+
+    for e in errors[:shown]:
         icon = "❌" if e.severity == Severity.ERROR else "⚠️" if e.severity == Severity.WARNING else "ℹ️"
         print(f"  {icon}  Row {e.row} | {e.field_name} | [{e.rule_id}]")
         print(f"      {e.message}")
@@ -44,6 +64,9 @@ def print_summary(errors: list[ValidationError]) -> None:
         if e.expected:
             print(f"      Expected: {e.expected}")
         print()
+
+    if shown < len(errors):
+        print(f"  ... and {len(errors) - shown} more. Use -o to export all errors.\n")
 
 
 def save_to_excel(errors: list[ValidationError], output_path: Path) -> None:

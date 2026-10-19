@@ -29,21 +29,34 @@ class FieldSchema:
     pattern: str | None = None        # regex pattern
     catalog: str | None = None        # name of catalog file (without extension)
     date_format: str | None = None    # e.g. '%Y-%m-%d'
+    min_value: float | None = None    # minimum numeric value
+    max_value: float | None = None    # maximum numeric value
     description: str = ""
+
+    # Cached computed properties (set in __post_init__)
+    _group_name: str | None = field(default=None, init=False, repr=False)
+    _is_required: bool = field(default=False, init=False, repr=False)
+    _is_group: bool = field(default=False, init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        self._is_required = self.category == "required"
+        self._is_group = self.category.startswith("group:")
+        if self._is_group:
+            self._group_name = self.category.split(":", 1)[1]
+        else:
+            self._group_name = None
 
     @property
     def is_required(self) -> bool:
-        return self.category == "required"
+        return self._is_required
 
     @property
     def is_group(self) -> bool:
-        return self.category.startswith("group:")
+        return self._is_group
 
     @property
     def group_name(self) -> str | None:
-        if self.is_group:
-            return self.category.split(":", 1)[1]
-        return None
+        return self._group_name
 
 
 @dataclass
@@ -56,22 +69,32 @@ class FileSchema:
     data_start_row: int         # 1-indexed row number where data starts
     fields: list[FieldSchema] = field(default_factory=list)
 
+    # Cached lookups (built lazily)
+    _field_map: dict[str, FieldSchema] | None = field(default=None, init=False, repr=False)
+    _groups: dict[str, list[FieldSchema]] | None = field(default=None, init=False, repr=False)
+
+    @property
+    def field_map(self) -> dict[str, FieldSchema]:
+        """O(1) field lookup by name."""
+        if self._field_map is None:
+            self._field_map = {f.name: f for f in self.fields}
+        return self._field_map
+
     def get_field(self, name: str) -> FieldSchema | None:
-        for f in self.fields:
-            if f.name == name:
-                return f
-        return None
+        return self.field_map.get(name)
 
     def get_group_fields(self, group_name: str) -> list[FieldSchema]:
         return [f for f in self.fields if f.group_name == group_name]
 
     def get_all_groups(self) -> dict[str, list[FieldSchema]]:
-        groups: dict[str, list[FieldSchema]] = {}
-        for f in self.fields:
-            gn = f.group_name
-            if gn:
-                groups.setdefault(gn, []).append(f)
-        return groups
+        if self._groups is None:
+            groups: dict[str, list[FieldSchema]] = {}
+            for f in self.fields:
+                gn = f.group_name
+                if gn:
+                    groups.setdefault(gn, []).append(f)
+            self._groups = groups
+        return self._groups
 
 
 @dataclass
@@ -84,7 +107,7 @@ class CrossFieldRule:
     severity: str = "ERROR"
 
 
-@dataclass
+@dataclass(slots=True)
 class ValidationError:
     """A single validation error."""
     file_name: str

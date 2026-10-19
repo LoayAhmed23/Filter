@@ -44,11 +44,13 @@ def parse_excel(
     # --- Try reading the workbook ---
     try:
         # header_row is 1-indexed in schema, pandas uses 0-indexed
+        # Use openpyxl engine for .xlsx; read everything as string to preserve raw data
         df = pd.read_excel(
             file_path,
             sheet_name=schema.sheet_name,
             header=schema.header_row - 1,
             dtype=str,  # read everything as string to preserve raw data
+            engine="openpyxl",
         )
     except ValueError as exc:
         errors.append(
@@ -77,8 +79,11 @@ def parse_excel(
         )
         return pd.DataFrame(), errors
 
+    # --- Strip column whitespace once ---
+    df.columns = df.columns.str.strip()
+
     # --- Validate expected columns exist ---
-    actual_columns = set(df.columns.str.strip())
+    actual_columns = set(df.columns)
     for field in schema.fields:
         if field.column not in actual_columns:
             errors.append(
