@@ -27,7 +27,7 @@ from engine.schema_loader import load_all_catalogs, load_cross_field_rules, load
 
 logger = logging.getLogger(__name__)
 
-# Safe builtins exposed to cross-field rule expressions
+# Safe builtins exposed to cross-field rule expressions (eval fallback only)
 _SAFE_BUILTINS = {
     "len": len,
     "int": int,
@@ -42,6 +42,125 @@ _SAFE_BUILTINS = {
     "False": False,
     "None": None,
 }
+
+# ── Vectorizable expression patterns (compiled once at import) ──────
+# Order matters: more specific patterns first.
+_ATOMIC_PATTERNS: list[tuple[re.Pattern, str]] = [
+    # int(VAR or 0) > 0
+    (re.compile(r"^int\((\w+)\s+or\s+0\)\s*>\s*0$"), "int_gt_zero"),
+    # int(VAR or 0) == 0
+    (re.compile(r"^int\((\w+)\s+or\s+0\)\s*==\s*0$"), "int_eq_zero"),
+    # VAR not in ['V1', 'V2', ...]
+    (re.compile(r"^(\w+)\s+not\s+in\s+\[(.+)\]$"), "not_in"),
+    # VAR in ['V1', 'V2', ...]
+    (re.compile(r"^(\w+)\s+in\s+\[(.+)\]$"), "in_list"),
+    # VAR is not None
+    (re.compile(r"^(\w+)\s+is\s+not\s+None$"), "is_not_none"),
+    # VAR is None
+    (re.compile(r"^(\w+)\s+is\s+None$"), "is_none"),
+    # VAR == 'VALUE'
+    (re.compile(r"^(\w+)\s*==\s*'([^']*)'$"), "eq"),
+    # VAR != 'VALUE'
+    (re.compile(r"^(\w+)\s*!=\s*'([^']*)'$"), "neq"),
+]
+
+
+def _parse_atomic_to_mask(
+    expr: str,
+    series_map: dict[str, pd.Series],
+) -> pd.Series | None:
+    """Try to convert a single atomic expression to a boolean Series.
+
+    Returns None if the expression pattern is not recognised or a
+    referenced variable is missing from *series_map*.
+    """
+    expr = expr.strip()
+    for pattern, kind in _ATOMIC_PATTERNS:
+        m = pattern.match(expr)
+        if m is None:
+            continue
+
+        if kind == "int_gt_zero":
+            s = series_map.get(m.group(1))
+            if s is None:
+                return None
+            return pd.to_numeric(s, errors="coerce").fillna(0) > 0
+
+        if kind == "int_eq_zero":
+            s = series_map.get(m.group(1))
+            if s is None:
+                return None
+            return pd.to_numeric(s, errors="coerce").fillna(0) == 0
+
+        if kind == "not_in":
+            s = series_map.get(m.group(1))
+            if s is None:
+                return None
+            vals = [v.strip().strip("'\"") for v in m.group(2).split(",")]
+            return ~s.isin(vals)
+
+        if kind == "in_list":
+            s = series_map.get(m.group(1))
+            if s is None:
+                return None
+            vals = [v.strip().strip("'\"") for v in m.group(2).split(",")]
+            return s.isin(vals)
+
+        if kind == "is_not_none":
+            s = series_map.get(m.group(1))
+            if s is None:
+                return None
+            return s.notna()
+
+        if kind == "is_none":
+            s = series_map.get(m.group(1))
+            if s is None:
+                return None
+            return s.isna()
+
+        if kind == "eq":
+            s = series_map.get(m.group(1))
+            if s is None:
+                return None
+            return s == m.group(2)
+
+        if kind == "neq":
+            s = series_map.get(m.group(1))
+            if s is None:
+                return None
+            return s != m.group(2)
+
+    return None  # no pattern matched
+
+
+def _parse_expr_to_mask(
+    expr: str | None,
+    series_map: dict[str, pd.Series],
+    n_rows: int,
+) -> pd.Series | None:
+    """Parse a condition/assertion expression into a vectorized boolean mask.
+
+    Supports ``and``-separated compound expressions.
+    Returns *None* if the expression cannot be vectorized (caller should
+    fall back to row-by-row eval).
+    """
+    if expr is None:
+        return None  # caller treats None as "always true"
+
+    # Split on top-level ' and '
+    parts = [p.strip() for p in expr.split(" and ")]
+
+    masks: list[pd.Series] = []
+    for part in parts:
+        mask = _parse_atomic_to_mask(part, series_map)
+        if mask is None:
+            return None  # can't vectorize → fall back
+        masks.append(mask)
+
+    result = masks[0]
+    for m in masks[1:]:
+        result = result & m
+    return result
 
 
 class FileValidator:
@@ -75,7 +194,7 @@ class FileValidator:
             if field.pattern:
                 self._compiled_patterns[field.name] = re.compile(field.pattern)
 
-        # Pre-compile cross-field rule expressions
+        # Pre-compile cross-field rule expressions (used by eval fallback)
         self._compiled_conditions: dict[str, Any] = {}
         self._compiled_assertions: dict[str, Any] = {}
         for rule in self.cross_field_rules:
@@ -93,6 +212,26 @@ class FileValidator:
             except SyntaxError:
                 self._compiled_assertions[rule.rule_id] = None
 
+    # ─────────────────────────────────────────────────────────────────
+    # Pre-compute stripped string series once for all layers
+    # ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def _precompute_series(
+        df: pd.DataFrame,
+        col_map: dict[str, str],
+    ) -> dict[str, pd.Series]:
+        """Convert each column to string with NaN→"" once per column.
+
+        Returns a dict mapping **field name** → string Series.
+        """
+        cache: dict[str, pd.Series] = {}
+        for field_name, col in col_map.items():
+            cache[field_name] = df[col].fillna("").astype(str)
+        return cache
+
+    # ─────────────────────────────────────────────────────────────────
+    # Main pipeline
+    # ─────────────────────────────────────────────────────────────────
     def validate(self, file_path: Path) -> list[ValidationError]:
         """Run the full validation pipeline on an Excel file.
 
@@ -129,17 +268,20 @@ class FileValidator:
         # Precompute excel row numbers (vectorized)
         excel_rows = np.arange(n_rows, dtype=np.int64) + self.schema.data_start_row
 
+        # ── Pre-compute stripped string series ONCE ──
+        stripped = self._precompute_series(df, col_map)
+
         # ── Layer 2 & 3: Vectorized field-level + catalog checks ──
         logger.info("Layer 2-3: Field-level + catalog validation...")
         field_errors = self._validate_fields_vectorized(
-            df, col_map, excel_rows, file_name, sheet
+            stripped, col_map, excel_rows, file_name, sheet
         )
         all_errors.extend(field_errors)
 
         # ── Layer 4: Group checks (vectorized) ──
         logger.info("Layer 4: Group validation...")
         group_errors = self._validate_groups_vectorized(
-            df, col_map, excel_rows, file_name, sheet
+            stripped, col_map, excel_rows, file_name, sheet
         )
         all_errors.extend(group_errors)
 
@@ -148,7 +290,7 @@ class FileValidator:
             logger.info("Layer 5: Cross-field validation (%d rules)...",
                         len(self.cross_field_rules))
             xf_errors = self._validate_cross_fields_vectorized(
-                df, col_map, excel_rows, file_name, sheet
+                stripped, col_map, excel_rows, file_name, sheet
             )
             all_errors.extend(xf_errors)
 
@@ -164,23 +306,19 @@ class FileValidator:
     # ─────────────────────────────────────────────────────────────────
     def _validate_fields_vectorized(
         self,
-        df: pd.DataFrame,
+        stripped: dict[str, pd.Series],
         col_map: dict[str, str],
         excel_rows: np.ndarray,
         file_name: str,
         sheet: str,
     ) -> list[ValidationError]:
         errors: list[ValidationError] = []
-        n_rows = len(df)
 
         for field in self.schema.fields:
-            col = col_map.get(field.name)
-            if col is None:
+            if field.name not in stripped:
                 continue  # column missing, already reported in structural checks
 
-            # Get the raw series, stripped
-            series = df[col]
-            str_series = series.fillna("").astype(str).str.strip()
+            str_series = stripped[field.name]
             is_empty = str_series == ""
 
             # ── Required check ──
@@ -208,7 +346,6 @@ class FileValidator:
             # ── Data type check ──
             type_fail_mask = None
             if field.data_type == "integer":
-                # Check if values can be parsed as integers
                 # A valid integer string: optional sign, digits, no decimal point
                 type_fail_mask = ~ne_str_series.str.fullmatch(r"-?\d+")
                 if type_fail_mask.any():
@@ -225,7 +362,6 @@ class FileValidator:
 
             elif field.data_type == "date":
                 fmt = field.date_format or "%Y-%m-%d"
-                # Try to parse dates vectorized with pandas
                 parsed = pd.to_datetime(ne_str_series, format=fmt, errors="coerce")
                 type_fail_mask = parsed.isna()
                 if type_fail_mask.any():
@@ -330,7 +466,7 @@ class FileValidator:
     # ─────────────────────────────────────────────────────────────────
     def _validate_groups_vectorized(
         self,
-        df: pd.DataFrame,
+        stripped: dict[str, pd.Series],
         col_map: dict[str, str],
         excel_rows: np.ndarray,
         file_name: str,
@@ -341,22 +477,18 @@ class FileValidator:
 
         for group_name, group_fields in groups.items():
             # Build boolean DataFrame: which fields are non-empty per row
-            field_cols = []
             field_names_in_group = []
             for f in group_fields:
-                col = col_map.get(f.name)
-                if col is None:
-                    continue
-                field_cols.append(col)
-                field_names_in_group.append(f.name)
+                if f.name in stripped:
+                    field_names_in_group.append(f.name)
 
-            if not field_cols:
+            if not field_names_in_group:
                 continue
 
-            # Create a boolean frame: True where non-empty
+            # Reuse pre-computed stripped series
             non_empty_df = pd.DataFrame({
-                fname: df[col].fillna("").astype(str).str.strip() != ""
-                for fname, col in zip(field_names_in_group, field_cols)
+                fname: stripped[fname] != ""
+                for fname in field_names_in_group
             })
 
             # Count filled and total per row
@@ -402,60 +534,146 @@ class FileValidator:
     # ─────────────────────────────────────────────────────────────────
     def _validate_cross_fields_vectorized(
         self,
-        df: pd.DataFrame,
+        stripped: dict[str, pd.Series],
         col_map: dict[str, str],
         excel_rows: np.ndarray,
         file_name: str,
         sheet: str,
     ) -> list[ValidationError]:
         errors: list[ValidationError] = []
+        n_rows = len(excel_rows)
 
-        # Build the evaluation context DataFrame once:
-        # Map field schema names -> column header names, and also expose column names directly
-        # We need to build a context dict with safe keys for each row.
-        # Instead of row-by-row, we pre-build a dict of column -> safe_key mappings.
-
-        safe_key_map: dict[str, str] = {}  # original column -> safe key
-        clean_key_map: dict[str, str] = {}  # original column -> cleaned key (no leading numbers)
-
+        # Build series_map: variable_name -> Series with NaN for empty.
+        # Rules reference column headers (e.g. "Liability_Indicator"),
+        # so map both the column name and any cleaned variant.
+        series_map: dict[str, pd.Series] = {}
         for field_schema in self.schema.fields:
             col = col_map.get(field_schema.name)
             if col is None:
                 continue
-            # Use the column header as the variable name (with safe replacements)
+            s = stripped[field_schema.name]
+            # Replace "" with NaN so `is not None` → .notna() works
+            s_nan = s.where(s != "")
             safe_key = col.replace(" ", "_").replace("-", "_").replace("/", "_")
-            safe_key_map[col] = safe_key
-            # Also create a clean key (strip leading numbers/dots)
+            series_map[safe_key] = s_nan
             clean_key = re.sub(r"^\d+[\._\s]*", "", safe_key)
             if clean_key and clean_key != safe_key:
-                clean_key_map[col] = clean_key
+                series_map[clean_key] = s_nan
 
-        # Pre-build a "context frame" — one column per safe variable name
-        # Convert NaN/empty to None for cleaner expressions
-        ctx_data: dict[str, np.ndarray] = {}
-        for col, safe_key in safe_key_map.items():
-            series = df[col].fillna("").astype(str).str.strip()
-            # Build array: None where empty, stripped string otherwise
-            is_empty = (series == "")
-            arr = np.where(is_empty.values, None, series.values)
-            ctx_data[safe_key] = arr
-            # Also map clean key
-            if col in clean_key_map:
-                ctx_data[clean_key_map[col]] = arr
-
-        n_rows = len(df)
-
-        # Process rules in chunks for memory efficiency
-        CHUNK_SIZE = 10_000
-        n_chunks = (n_rows + CHUNK_SIZE - 1) // CHUNK_SIZE
+        # ── Process each rule: try vectorized, fall back to eval ──
+        fallback_rules: list[CrossFieldRule] = []
+        vectorized_count = 0
 
         for rule in self.cross_field_rules:
+            # Try to vectorize condition
+            if rule.condition:
+                cond_mask = _parse_expr_to_mask(rule.condition, series_map, n_rows)
+            else:
+                cond_mask = None  # means "always true"
+
+            # Try to vectorize assertion
+            assert_mask = _parse_expr_to_mask(rule.assertion, series_map, n_rows)
+
+            if assert_mask is None:
+                # Can't vectorize this rule → queue for eval fallback
+                fallback_rules.append(rule)
+                continue
+
+            if cond_mask is None and rule.condition:
+                # Condition couldn't be parsed but assertion could
+                fallback_rules.append(rule)
+                continue
+
+            vectorized_count += 1
+
+            # Compute failed rows: condition met AND assertion failed
+            if cond_mask is not None:
+                fail_mask = cond_mask & (~assert_mask)
+            else:
+                # No condition → assertion always checked
+                fail_mask = ~assert_mask
+
+            if not fail_mask.any():
+                continue
+
+            severity = Severity(rule.severity)
+            fail_indices = np.where(fail_mask.values)[0]
+            fail_rows = excel_rows[fail_indices]
+
+            for row in fail_rows:
+                errors.append(ValidationError(
+                    file_name=file_name, sheet=sheet,
+                    row=int(row),
+                    field_name="(cross-field)",
+                    rule_id=rule.rule_id,
+                    severity=severity,
+                    message=(
+                        f"Cross-field rule '{rule.rule_id}' failed: "
+                        f"{rule.description}. Assertion: {rule.assertion}"
+                    ),
+                    expected=rule.assertion,
+                ))
+
+        logger.info(
+            "  %d/%d rules vectorized, %d falling back to eval.",
+            vectorized_count, len(self.cross_field_rules), len(fallback_rules),
+        )
+
+        # ── Eval fallback for complex rules ──
+        if fallback_rules:
+            self._eval_fallback_rules(
+                fallback_rules, stripped, col_map, excel_rows,
+                file_name, sheet, series_map, errors,
+            )
+
+        return errors
+
+    # ─────────────────────────────────────────────────────────────────
+    # Eval fallback for rules that can't be vectorized
+    # ─────────────────────────────────────────────────────────────────
+    def _eval_fallback_rules(
+        self,
+        rules: list[CrossFieldRule],
+        stripped: dict[str, pd.Series],
+        col_map: dict[str, str],
+        excel_rows: np.ndarray,
+        file_name: str,
+        sheet: str,
+        series_map: dict[str, pd.Series],
+        errors: list[ValidationError],
+    ) -> None:
+        """Row-by-row eval for rules that couldn't be vectorized."""
+        n_rows = len(excel_rows)
+
+        # Build context arrays once (reuse pre-computed stripped series)
+        ctx_data: dict[str, np.ndarray] = {}
+        for key, s in series_map.items():
+            # Convert NaN → None for eval compatibility
+            arr = s.values.copy()
+            nan_mask = pd.isna(arr)
+            arr[nan_mask] = None
+            ctx_data[key] = arr
+
+        for rule in rules:
             compiled_cond = self._compiled_conditions.get(rule.rule_id)
             compiled_assert = self._compiled_assertions.get(rule.rule_id)
 
             if compiled_assert is None and rule.assertion:
-                # Compilation failed earlier
-                for row_idx in range(n_rows):
+                continue  # compilation failed
+
+            for row_idx in range(n_rows):
+                ctx = dict(_SAFE_BUILTINS)
+                for key, arr in ctx_data.items():
+                    ctx[key] = arr[row_idx]
+
+                try:
+                    if rule.condition and compiled_cond:
+                        if not eval(compiled_cond, {"__builtins__": {}}, ctx):
+                            continue
+                    result = eval(compiled_assert, {"__builtins__": {}}, ctx)
+                    if result:
+                        continue
+                except Exception as exc:
                     errors.append(ValidationError(
                         file_name=file_name, sheet=sheet,
                         row=int(excel_rows[row_idx]),
@@ -463,60 +681,22 @@ class FileValidator:
                         rule_id=rule.rule_id,
                         severity=Severity.WARNING,
                         message=(
-                            f"Rule '{rule.rule_id}' could not be compiled: "
+                            f"Rule '{rule.rule_id}' could not be evaluated: {exc}. "
+                            f"Condition: {rule.condition!r}, "
                             f"Assertion: {rule.assertion!r}"
                         ),
                     ))
-                continue
+                    continue
 
-            # Evaluate rule for each row using pre-built context
-            for chunk_start in range(0, n_rows, CHUNK_SIZE):
-                chunk_end = min(chunk_start + CHUNK_SIZE, n_rows)
-
-                for row_idx in range(chunk_start, chunk_end):
-                    # Build per-row context from pre-computed arrays
-                    ctx = dict(_SAFE_BUILTINS)
-                    for key, arr in ctx_data.items():
-                        ctx[key] = arr[row_idx]
-
-                    try:
-                        # Check condition
-                        if rule.condition and compiled_cond:
-                            condition_met = eval(compiled_cond, {"__builtins__": {}}, ctx)
-                            if not condition_met:
-                                continue
-
-                        # Evaluate assertion
-                        result = eval(compiled_assert, {"__builtins__": {}}, ctx)
-                        if result:
-                            continue
-
-                    except Exception as exc:
-                        errors.append(ValidationError(
-                            file_name=file_name, sheet=sheet,
-                            row=int(excel_rows[row_idx]),
-                            field_name="(cross-field)",
-                            rule_id=rule.rule_id,
-                            severity=Severity.WARNING,
-                            message=(
-                                f"Rule '{rule.rule_id}' could not be evaluated: {exc}. "
-                                f"Condition: {rule.condition!r}, Assertion: {rule.assertion!r}"
-                            ),
-                        ))
-                        continue
-
-                    # Assertion failed
-                    errors.append(ValidationError(
-                        file_name=file_name, sheet=sheet,
-                        row=int(excel_rows[row_idx]),
-                        field_name="(cross-field)",
-                        rule_id=rule.rule_id,
-                        severity=Severity(rule.severity),
-                        message=(
-                            f"Cross-field rule '{rule.rule_id}' failed: {rule.description}. "
-                            f"Assertion: {rule.assertion}"
-                        ),
-                        expected=rule.assertion,
-                    ))
-
-        return errors
+                errors.append(ValidationError(
+                    file_name=file_name, sheet=sheet,
+                    row=int(excel_rows[row_idx]),
+                    field_name="(cross-field)",
+                    rule_id=rule.rule_id,
+                    severity=Severity(rule.severity),
+                    message=(
+                        f"Cross-field rule '{rule.rule_id}' failed: "
+                        f"{rule.description}. Assertion: {rule.assertion}"
+                    ),
+                    expected=rule.assertion,
+                ))
