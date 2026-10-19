@@ -14,6 +14,8 @@ def _is_empty(value: Any) -> bool:
     """Check whether a cell value is considered empty."""
     if value is None:
         return True
+    if isinstance(value, float) and pd.isna(value):
+        return True
     if isinstance(value, str) and value.strip() == "":
         return True
     return False

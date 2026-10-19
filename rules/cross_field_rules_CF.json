@@ -45,7 +45,7 @@
     "rule_id": "R007",
     "description": "If Amount Overdue is greater than zero, Last Payment Date cannot be null",
     "condition": "int(Amount_Overdue or 0) > 0",
-    "assertion": "Last_Payment_Date is not None",
+    "assertion": "Date_Latest_Payment_Received is not None",
     "severity": "ERROR"
   },
   {
@@ -80,7 +80,7 @@
     "rule_id": "R012",
     "description": "If Credit facility is other than 002,003,004 then Number of Installment should be greater than zero",
     "condition": "Credit_Facility_Type not in ['002', '003', '004']",
-    "assertion": "Number_of_Installments > 0",
+    "assertion": "int(Number_of_Installments or 0) > 0",
     "severity": "ERROR"
   },
   {
