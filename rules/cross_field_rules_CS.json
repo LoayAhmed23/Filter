@@ -1,9 +1,86 @@
 [
   {
-    "rule_id": "R001",
-    "description": "Primary Card Number is required when Liability Indicator is 003",
-    "condition": "Liability_Indicator == '003'",
-    "assertion": "Primary_Card_Number is not None",
+    "rule_id": "CS_R001",
+    "description": "If Citizenship is 054 (Egypt), then National ID is required",
+    "condition": "Citizenship == '054'",
+    "assertion": "National_ID is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R002",
+    "description": "If Citizenship is not 054 (Egypt), then Identification Code 1 is required",
+    "condition": "Citizenship is not None and Citizenship != '054'",
+    "assertion": "Identification_Code_1 is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R003",
+    "description": "If Language ID is 001 (English) or 003 (Both), then Subject First Name English is required",
+    "condition": "Language_ID in ['001', '003']",
+    "assertion": "Subject_First_Name_English is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R004",
+    "description": "If Language ID is 001 (English) or 003 (Both), then Subject Middle Name English is required",
+    "condition": "Language_ID in ['001', '003']",
+    "assertion": "Subject_Middle_Name_English is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R005",
+    "description": "If Language ID is 001 (English) or 003 (Both), then Subject Last Name English is required",
+    "condition": "Language_ID in ['001', '003']",
+    "assertion": "Subject_Last_Name_English is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R006",
+    "description": "If Language ID is 002 (Arabic) or 003 (Both), then Subject First Name Arabic is required",
+    "condition": "Language_ID in ['002', '003']",
+    "assertion": "Subject_First_Name_Arabic is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R007",
+    "description": "If Language ID is 002 (Arabic) or 003 (Both), then Subject Middle Name Arabic is required",
+    "condition": "Language_ID in ['002', '003']",
+    "assertion": "Subject_Middle_Name_Arabic is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R008",
+    "description": "If Language ID is 002 (Arabic) or 003 (Both), then Subject Last Name Arabic is required",
+    "condition": "Language_ID in ['002', '003']",
+    "assertion": "Subject_Last_Name_Arabic is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R009",
+    "description": "If Language ID is 001 (English) or 003 (Both), then Address 1 Line 1 English is required",
+    "condition": "Language_ID in ['001', '003']",
+    "assertion": "Address_1_Line_1_English is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R010",
+    "description": "If Language ID is 002 (Arabic) or 003 (Both), then Address 1 Line 1 Arabic is required",
+    "condition": "Language_ID in ['002', '003']",
+    "assertion": "Address_1_Line_1_Arabic is not None",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R011",
+    "description": "Date of Birth must match the birth date encoded in the first 7 digits of Egyptian National ID (CYYMMDD -> MMDDYYYY)",
+    "condition": "National_ID is not None and len(str(National_ID)) == 14 and str(National_ID)[0] in ['2', '3'] and Date_of_Birth is not None",
+    "assertion": "str(Date_of_Birth) == (National_ID[3:5] + National_ID[5:7] + ('19' if National_ID[0] == '2' else '20') + National_ID[1:3])",
+    "severity": "ERROR"
+  },
+  {
+    "rule_id": "CS_R012",
+    "description": "Gender must match the 13th digit of Egyptian National ID (even = Female '002', odd = Male '001')",
+    "condition": "National_ID is not None",
+    "assertion": "Gender == ('002' if int(National_ID[12]) % 2 == 0 else '001')",
     "severity": "ERROR"
   }
 ]

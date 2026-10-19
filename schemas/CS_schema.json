@@ -1,26 +1,590 @@
 {
-  "name": "Subject Segment",
-  "description": "Regulatory Report B — sample schema (customize to your needs)",
-  "sheet_name": "Sheet1",
+  "name": "Consumer Subject",
+  "description": "Consumer Subject (CS) segment schema — iscore regulatory report",
+  "sheet_name": 0,
   "header_row": 1,
   "data_start_row": 2,
 
   "fields": [
     {
-      "name": "record_id",
-      "column": "Record ID",
+      "name": "1. Segment Identifier",
+      "column": "Segment_Identifier",
       "data_type": "string",
       "category": "required",
-      "max_length": 20,
-      "description": "Unique record identifier"
+      "catalog": "CS_segment",
+      "length": 4,
+      "description": "Must contain the value CNCS"
     },
     {
-      "name": "entity_name",
-      "column": "Entity Name",
+      "name": "2. Data Provider ID",
+      "column": "Data_Provider_ID",
+      "data_type": "string",
+      "pattern": "^[A-Za-z0-9]{10}$",
+      "category": "required",
+      "length": 10,
+      "description": "10 Alpha Numeric Digits"
+    },
+    {
+      "name": "3. Data Provider Branch ID",
+      "column": "Data_Provider_Branch_ID",
       "data_type": "string",
       "category": "required",
-      "max_length": 200,
-      "description": "Name of the reporting entity"
+      "length": 4,
+      "description": "Branch Ids"
+    },
+    {
+      "name": "4. Credit Facility Account Number",
+      "column": "Credit_Facility_Account_Number",
+      "data_type": "string",
+      "category": "required",
+      "length": 25,
+      "description": "Unique Credit Facility Account Number/card number"
+    },
+    {
+      "name": "5. Data Provider Identification Code for Subject",
+      "column": "Data_Provider_Identification_Code_for_Subject",
+      "data_type": "string",
+      "category": "required",
+      "length": 16,
+      "description": "Identification Code assigned to the Subject by Data Provider"
+    },
+    {
+      "name": "6. Previous Data Provider Identification Code for Subject",
+      "column": "Previous_Data_Provider_Identification_Code_for_Subject",
+      "data_type": "string",
+      "category": "optional",
+      "length": 16,
+      "description": "Defaulted to blank/NULL. Used in migration process, ONLY with coordination with iscore"
+    },
+    {
+      "name": "7. Bureau Subject Code",
+      "column": "Bureau_Subject_Code",
+      "data_type": "string",
+      "category": "optional",
+      "length": 16,
+      "description": "Bureau Subject Code issued by Egyptian Credit Bureau (iscore) to the Subject"
+    },
+    {
+      "name": "8. National ID",
+      "column": "National_ID",
+      "data_type": "string",
+      "category": "optional",
+      "length": 14,
+      "description": "National ID issued by the Authority. Required when Citizenship = 054 (Egypt)"
+    },
+    {
+      "name": "9. Identification Code 1",
+      "column": "Identification_Code_1",
+      "data_type": "string",
+      "category": "group:id_code1",
+      "length": 20,
+      "description": "Identification Code 1 issued by Authority specified. Required when Citizenship is not 054"
+    },
+    {
+      "name": "10. Issuing Authority 1",
+      "column": "Issuing_Authority_1",
+      "data_type": "string",
+      "category": "group:id_code1",
+      "catalog": "issuing_authorities",
+      "length": 3,
+      "description": "Code of the Authority that issued Identification Code 1. Required when ID Code 1 is reported"
+    },
+    {
+      "name": "11. Identification Code 1 Expiry Date",
+      "column": "Identification_Code_1_Expiry_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date of expiry of the Identification Code 1"
+    },
+    {
+      "name": "12. Identification Code 2",
+      "column": "Identification_Code_2",
+      "data_type": "string",
+      "category": "group:id_code2",
+      "length": 20,
+      "description": "Identification Code 2 issued by Authority specified"
+    },
+    {
+      "name": "13. Issuing Authority 2",
+      "column": "Issuing_Authority_2",
+      "data_type": "string",
+      "category": "group:id_code2",
+      "catalog": "issuing_authorities",
+      "length": 3,
+      "description": "Code of the Authority that issued Identification Code 2. Required when ID Code 2 is reported"
+    },
+    {
+      "name": "14. Identification Code 2 Expiry Date",
+      "column": "Identification_Code_2_Expiry_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date of expiry of the Identification Code 2"
+    },
+    {
+      "name": "15. Identification Code 3",
+      "column": "Identification_Code_3",
+      "data_type": "string",
+      "category": "group:id_code3",
+      "length": 20,
+      "description": "Identification Code 3 issued by Authority specified"
+    },
+    {
+      "name": "16. Issuing Authority 3",
+      "column": "Issuing_Authority_3",
+      "data_type": "string",
+      "category": "group:id_code3",
+      "catalog": "issuing_authorities",
+      "length": 3,
+      "description": "Code of the Authority that issued Identification Code 3. Required when ID Code 3 is reported"
+    },
+    {
+      "name": "17. Identification Code 3 Expiry Date",
+      "column": "Identification_Code_3_Expiry_Date",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date of expiry of the Identification Code 3"
+    },
+    {
+      "name": "18. Language ID",
+      "column": "Language_ID",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "language_ids",
+      "length": 3,
+      "description": "Identifies whether content for Subject Name and Address is English, Arabic or Both"
+    },
+    {
+      "name": "19. Subject First Name (English)",
+      "column": "Subject_First_Name_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Subject first name in English."
+    },
+    {
+      "name": "20. Subject Middle Name (English)",
+      "column": "Subject_Middle_Name_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Subject middle name in English."
+    },
+    {
+      "name": "21. Subject Last Name (English)",
+      "column": "Subject_Last_Name_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 90,
+      "description": "Subject last name in English."
+    },
+    {
+      "name": "22. Subject First Name (Arabic)",
+      "column": "Subject_First_Name_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Subject first name in Arabic."
+    },
+    {
+      "name": "23. Subject Middle Name (Arabic)",
+      "column": "Subject_Middle_Name_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Subject middle name in Arabic."
+    },
+    {
+      "name": "24. Subject Last Name (Arabic)",
+      "column": "Subject_Last_Name_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 90,
+      "description": "Subject last name in Arabic."
+    },
+    {
+      "name": "25. Previous First Name of Subject (English)",
+      "column": "Previous_First_Name_English",
+      "data_type": "string",
+      "category": "group:prev_name_en",
+      "length": 40,
+      "description": "Previous first name of subject in English"
+    },
+    {
+      "name": "26. Previous Middle Name of Subject (English)",
+      "column": "Previous_Middle_Name_English",
+      "data_type": "string",
+      "category": "group:prev_name_en",
+      "length": 40,
+      "description": "Previous middle name of subject in English"
+    },
+    {
+      "name": "27. Previous Last Name of Subject (English)",
+      "column": "Previous_Last_Name_English",
+      "data_type": "string",
+      "category": "group:prev_name_en",
+      "length": 90,
+      "description": "Previous last name of subject in English"
+    },
+    {
+      "name": "28. Previous First Name of Subject (Arabic)",
+      "column": "Previous_First_Name_Arabic",
+      "data_type": "string",
+      "category": "group:prev_name_ar",
+      "length": 40,
+      "description": "Previous first name of subject in Arabic"
+    },
+    {
+      "name": "29. Previous Middle Name of Subject (Arabic)",
+      "column": "Previous_Middle_Name_Arabic",
+      "data_type": "string",
+      "category": "group:prev_name_ar",
+      "length": 40,
+      "description": "Previous middle name of subject in Arabic"
+    },
+    {
+      "name": "30. Previous Last Name of Subject (Arabic)",
+      "column": "Previous_Last_Name_Arabic",
+      "data_type": "string",
+      "category": "group:prev_name_ar",
+      "length": 90,
+      "description": "Previous last name of subject in Arabic"
+    },
+    {
+      "name": "31. Address 1 Type",
+      "column": "Address_1_Type",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "address_types",
+      "length": 3,
+      "description": "Address Type of Address 1 of the Subject"
+    },
+    {
+      "name": "32. Address 1 Line 1 (English)",
+      "column": "Address_1_Line_1_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 180,
+      "description": "Address 1 Line 1 English."
+    },
+    {
+      "name": "33. Address 1 Line 2 (English)",
+      "column": "Address_1_Line_2_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Address 1 Line 2 English"
+    },
+    {
+      "name": "34. Address 1 Line 3 (English)",
+      "column": "Address_1_Line_3_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Address 1 Line 3 English"
+    },
+    {
+      "name": "35. Address 1 City (English)",
+      "column": "Address_1_City_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 60,
+      "description": "City of Address 1 in English"
+    },
+    {
+      "name": "36. Address 1 Line 1 (Arabic)",
+      "column": "Address_1_Line_1_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 180,
+      "description": "Address 1 Line 1 Arabic."
+    },
+    {
+      "name": "37. Address 1 Line 2 (Arabic)",
+      "column": "Address_1_Line_2_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Address 1 Line 2 Arabic"
+    },
+    {
+      "name": "38. Address 1 Line 3 (Arabic)",
+      "column": "Address_1_Line_3_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Address 1 Line 3 Arabic"
+    },
+    {
+      "name": "39. Address 1 City (Arabic)",
+      "column": "Address_1_City_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 60,
+      "description": "City of Address 1 in Arabic"
+    },
+    {
+      "name": "40. Address 1 Governorate Code",
+      "column": "Address_1_Governorate_Code",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "governorate_codes",
+      "length": 3,
+      "description": "Governorate Code for Address 1 of the Subject"
+    },
+    {
+      "name": "41. Address 1 PO Box No",
+      "column": "Address_1_PO_Box_No",
+      "data_type": "string",
+      "category": "optional",
+      "length": 10,
+      "description": "Post Box Number of Address 1 of the Subject"
+    },
+    {
+      "name": "42. Address 1 Zip Code",
+      "column": "Address_1_Zip_Code",
+      "data_type": "string",
+      "category": "optional",
+      "length": 10,
+      "description": "Zip Code of Address 1 of the Subject"
+    },
+    {
+      "name": "43. Country",
+      "column": "Country",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "country_codes",
+      "length": 3,
+      "description": "Country of Address 1 of the Subject"
+    },
+    {
+      "name": "44. Address 2 Type",
+      "column": "Address_2_Type",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "address_types",
+      "length": 3,
+      "description": "Address Type of Address 2 of the Subject"
+    },
+    {
+      "name": "45. Address 2 Line 1 (English)",
+      "column": "Address_2_Line_1_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 180,
+      "description": "Address 2 Line 1 English"
+    },
+    {
+      "name": "46. Address 2 Line 2 (English)",
+      "column": "Address_2_Line_2_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Address 2 Line 2 English"
+    },
+    {
+      "name": "47. Address 2 Line 3 (English)",
+      "column": "Address_2_Line_3_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Address 2 Line 3 English"
+    },
+    {
+      "name": "48. Address 2 City (English)",
+      "column": "Address_2_City_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 60,
+      "description": "City of Address 2 in English"
+    },
+    {
+      "name": "49. Address 2 Line 1 (Arabic)",
+      "column": "Address_2_Line_1_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 180,
+      "description": "Address 2 Line 1 Arabic"
+    },
+    {
+      "name": "50. Address 2 Line 2 (Arabic)",
+      "column": "Address_2_Line_2_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Address 2 Line 2 Arabic"
+    },
+    {
+      "name": "51. Address 2 Line 3 (Arabic)",
+      "column": "Address_2_Line_3_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 40,
+      "description": "Address 2 Line 3 Arabic"
+    },
+    {
+      "name": "52. Address 2 City (Arabic)",
+      "column": "Address_2_City_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 60,
+      "description": "City of Address 2 in Arabic"
+    },
+    {
+      "name": "53. Address 2 Governorate Code",
+      "column": "Address_2_Governorate_Code",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "governorate_codes",
+      "length": 3,
+      "description": "Governorate Code for Address 2 of the Subject"
+    },
+    {
+      "name": "54. Address 2 PO Box No",
+      "column": "Address_2_PO_Box_No",
+      "data_type": "string",
+      "category": "optional",
+      "length": 10,
+      "description": "Post Box Number of Address 2 of the Subject"
+    },
+    {
+      "name": "55. Address 2 Zip Code",
+      "column": "Address_2_Zip_Code",
+      "data_type": "string",
+      "category": "optional",
+      "length": 10,
+      "description": "Zip Code of Address 2 of the Subject"
+    },
+    {
+      "name": "56. Country 2",
+      "column": "Country_2",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "country_codes",
+      "length": 3,
+      "description": "Country of Address 2 of the Subject"
+    },
+    {
+      "name": "57. Telephone Area Code",
+      "column": "Telephone_Area_Code",
+      "data_type": "string",
+      "category": "optional",
+      "length": 10,
+      "description": "Telephone Area Code"
+    },
+    {
+      "name": "58. Residence Phone",
+      "column": "Residence_Phone",
+      "data_type": "string",
+      "category": "optional",
+      "length": 30,
+      "description": "Residence Phone Numbers of the Subject, multiple can be separated by commas"
+    },
+    {
+      "name": "59. Mobile",
+      "column": "Mobile",
+      "data_type": "string",
+      "category": "optional",
+      "length": 30,
+      "description": "Mobile Phone Numbers of the Subject, multiple can be separated by commas"
+    },
+    {
+      "name": "60. E-mail ID",
+      "column": "Email_ID",
+      "data_type": "string",
+      "category": "optional",
+      "length": 50,
+      "description": "E-mail ID of the Subject"
+    },
+    {
+      "name": "61. Date of Birth",
+      "column": "Date_of_Birth",
+      "data_type": "date",
+      "category": "optional",
+      "date_format": "%m%d%Y",
+      "length": 8,
+      "description": "Date of birth as presented in the NID"
+    },
+    {
+      "name": "62. Gender",
+      "column": "Gender",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "genders",
+      "length": 3,
+      "description": "Gender Code for the Subject"
+    },
+    {
+      "name": "63. Citizenship",
+      "column": "Citizenship",
+      "data_type": "string",
+      "category": "required",
+      "catalog": "country_codes",
+      "length": 3,
+      "description": "Citizenship Code for the Subject"
+    },
+    {
+      "name": "64. Marital Status",
+      "column": "Marital_Status",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "marital_statuses",
+      "length": 3,
+      "description": "Marital Status of the Subject"
+    },
+    {
+      "name": "65. Occupation",
+      "column": "Occupation",
+      "data_type": "string",
+      "category": "optional",
+      "catalog": "occupations",
+      "length": 3,
+      "description": "Occupation of the Subject"
+    },
+    {
+      "name": "66. Employer Name (English)",
+      "column": "Employer_Name_English",
+      "data_type": "string",
+      "category": "optional",
+      "length": 120,
+      "description": "Employer Name in English."
+    },
+    {
+      "name": "67. Employer Name (Arabic)",
+      "column": "Employer_Name_Arabic",
+      "data_type": "string",
+      "category": "optional",
+      "length": 120,
+      "description": "Employer Name in Arabic."
+    },
+    {
+      "name": "68. Employment Commercial Registry ID",
+      "column": "Employment_Commercial_Registry_ID",
+      "data_type": "string",
+      "category": "optional",
+      "length": 16,
+      "description": "Commercial Registry ID for Employer. Required when Employer Name (English or Arabic) is reported"
+    },
+    {
+      "name": "69. Reserved Field 1",
+      "column": "Reserved_Field_1",
+      "data_type": "string",
+      "category": "optional",
+      "length": 120,
+      "description": "Reserved field, to be reported as Null"
+    },
+    {
+      "name": "70. Reserved Field 2",
+      "column": "Reserved_Field_2",
+      "data_type": "string",
+      "category": "optional",
+      "length": 120,
+      "description": "Reserved field, to be reported as Null"
     }
   ]
 }
