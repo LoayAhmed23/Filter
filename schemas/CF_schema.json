@@ -10,7 +10,7 @@
       "column": "Segment_Identifier",
       "data_type": "string",
       "category": "required",
-      "catalog": "segment",
+      "catalog": "CF_segment",
       "length": 4,
       "description": "Must contain the Value CNCF"
     },
