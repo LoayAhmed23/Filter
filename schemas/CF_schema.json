@@ -1,6 +1,6 @@
 {
-  "name": "Credit Facilty",
-  "description": "Regulatory Report A — sample schema (customize to your needs)",
+  "name": "Credit Facility",
+  "description": "CF schema",
   "sheet_name": 0,
   "header_row": 1,
   "data_start_row": 2,

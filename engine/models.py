@@ -11,12 +11,6 @@ class Severity(enum.Enum):
     WARNING = "WARNING"
 
 
-class FieldCategory(enum.Enum):
-    REQUIRED = "required"
-    OPTIONAL = "optional"
-    GROUP = "group"  # value will be like 'group:agent_info'
-
-
 @dataclass
 class FieldSchema:
     """Schema definition for a single field / column."""
@@ -28,8 +22,6 @@ class FieldSchema:
     pattern: str | None = None        # regex pattern
     catalog: str | None = None        # name of catalog file (without extension)
     date_format: str | None = None    # e.g. '%Y-%m-%d'
-    min_value: float | None = None    # minimum numeric value
-    max_value: float | None = None    # maximum numeric value
     description: str = ""
 
     # Cached computed properties (set in __post_init__)

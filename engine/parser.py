@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 import pandas as pd
 
@@ -44,12 +43,11 @@ def parse_excel(
     # --- Try reading the workbook ---
     try:
         # header_row is 1-indexed in schema, pandas uses 0-indexed
-        # Use openpyxl engine for .xlsx; read everything as string to preserve raw data
         df = pd.read_excel(
             file_path,
             sheet_name=schema.sheet_name,
             header=schema.header_row - 1,
-            dtype=str,  # read everything as string to preserve raw data
+            dtype=str,
             engine="openpyxl",
         )
     except ValueError as exc:

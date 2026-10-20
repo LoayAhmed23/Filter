@@ -1,6 +1,6 @@
 {
-  "name": "Consumer Subject",
-  "description": "Consumer Subject (CS) segment schema — iscore regulatory report",
+  "name": "Consumer",
+  "description": "CS schema",
   "sheet_name": 0,
   "header_row": 1,
   "data_start_row": 2,

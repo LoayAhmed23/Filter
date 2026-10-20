@@ -15,7 +15,7 @@ import logging
 import sys
 from pathlib import Path
 
-from engine.validator import FileValidator
+from engine.validator import validate_file
 from reporting.error_reporter import print_summary, save_to_excel
 
 
@@ -66,15 +66,13 @@ def main() -> int:
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
 
-    # Build the validator
-    validator = FileValidator(
+    # Run validation
+    errors = validate_file(
+        file_path=args.file,
         schema_path=args.schema,
         catalog_dir=args.catalogs,
         rules_path=args.rules,
     )
-
-    # Run validation
-    errors = validator.validate(args.file)
 
     # Report results
     print_summary(errors)
