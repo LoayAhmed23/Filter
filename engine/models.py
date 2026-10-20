@@ -9,7 +9,6 @@ from typing import Any
 class Severity(enum.Enum):
     ERROR = "ERROR"
     WARNING = "WARNING"
-    INFO = "INFO"
 
 
 class FieldCategory(enum.Enum):
@@ -69,22 +68,8 @@ class FileSchema:
     data_start_row: int         # 1-indexed row number where data starts
     fields: list[FieldSchema] = field(default_factory=list)
 
-    # Cached lookups (built lazily)
-    _field_map: dict[str, FieldSchema] | None = field(default=None, init=False, repr=False)
+    # Cached lookup (built lazily)
     _groups: dict[str, list[FieldSchema]] | None = field(default=None, init=False, repr=False)
-
-    @property
-    def field_map(self) -> dict[str, FieldSchema]:
-        """O(1) field lookup by name."""
-        if self._field_map is None:
-            self._field_map = {f.name: f for f in self.fields}
-        return self._field_map
-
-    def get_field(self, name: str) -> FieldSchema | None:
-        return self.field_map.get(name)
-
-    def get_group_fields(self, group_name: str) -> list[FieldSchema]:
-        return [f for f in self.fields if f.group_name == group_name]
 
     def get_all_groups(self) -> dict[str, list[FieldSchema]]:
         if self._groups is None:
