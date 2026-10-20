@@ -8,7 +8,6 @@ from __future__ import annotations
 import logging
 import re
 import time
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -28,20 +27,7 @@ from engine.schema_loader import load_all_catalogs, load_cross_field_rules, load
 logger = logging.getLogger(__name__)
 
 # Safe builtins exposed to cross-field rule expressions
-_SAFE_BUILTINS = {
-    "len": len,
-    "int": int,
-    "float": float,
-    "str": str,
-    "abs": abs,
-    "min": min,
-    "max": max,
-    "round": round,
-    "datetime": datetime,
-    "True": True,
-    "False": False,
-    "None": None,
-}
+_SAFE_BUILTINS = {"int": int, "str": str}
 
 
 def validate_file(
