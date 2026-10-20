@@ -1,174 +1,174 @@
 [
   {
-    "rule_id": "R001",
+    "rule_id": "CF_R001",
     "description": "Primary Card Number is required when Liability Indicator is 003",
     "condition": "Liability_Indicator == '003'",
     "assertion": "Primary_Card_Number is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R002",
+    "rule_id": "CF_R002",
     "description": "Amount of installment required for all facilities except 002, 003, 004",
     "condition": "Credit_Facility_Type not in ['002', '003', '004']",
     "assertion": "Amount_of_Installment is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R003",
+    "rule_id": "CF_R003",
     "description": "Highest credit amount should be null for any other facility than 002, 003, 004",
     "condition": "Credit_Facility_Type not in ['002', '003', '004']",
     "assertion": "Highest_Credit is None",
     "severity": "WARNING"
   },
   {
-    "rule_id": "R004",
+    "rule_id": "CF_R004",
     "description": "Highest credit amount should not be null for facilities 002, 003, 004",
     "condition": "Credit_Facility_Type in ['002', '003', '004']",
     "assertion": "Highest_Credit is not None",
     "severity": "WARNING"
   },
   {
-    "rule_id": "R005",
+    "rule_id": "CF_R005",
     "description": "For facilities other than revolving facilities (002, 003, 004) the term of loan is required",
     "condition": "Credit_Facility_Type not in ['002', '003', '004']",
     "assertion": "Term_of_Loan is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R006",
+    "rule_id": "CF_R006",
     "description": "If Number of days past due is greater than 0 then Amount Overdue cannot be zero",
     "condition": "int(Number_of_Days_Past_Due or 0) > 0",
     "assertion": "int(Amount_Overdue or 0) > 0",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R007",
+    "rule_id": "CF_R007",
     "description": "If Amount Overdue is greater than zero, Last Payment Date cannot be null",
     "condition": "int(Amount_Overdue or 0) > 0",
     "assertion": "Date_Latest_Payment_Received is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R008",
+    "rule_id": "CF_R008",
     "description": "If Account status is 005 'Written Off' then Credit Facility Write-Off Date cannot be null",
     "condition": "Account_Status == '005'",
     "assertion": "Credit_Facility_Write_Off_Date is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R009",
+    "rule_id": "CF_R009",
     "description": "If Account status is 005 'Written Off' then Amount Written Off should be greater than zero",
     "condition": "Account_Status == '005'",
     "assertion": "int(Amount_Written_Off or 0) > 0",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R010",
+    "rule_id": "CF_R010",
     "description": "If Account status is 003 'Closed' then Account Closed Date should be not null",
     "condition": "Account_Status == '003'",
     "assertion": "Account_Closing_Date is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R011",
+    "rule_id": "CF_R011",
     "description": "If Account status is not 005 'Written Off' then Amount Written Off should be zero or null",
     "condition": "Account_Status != '005'",
     "assertion": "int(Amount_Written_Off or 0) == 0",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R012",
+    "rule_id": "CF_R012",
     "description": "If Credit facility is other than 002,003,004 then Number of Installment should be greater than zero",
     "condition": "Credit_Facility_Type not in ['002', '003', '004']",
     "assertion": "int(Number_of_Installments or 0) > 0",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R013",
+    "rule_id": "CF_R013",
     "description": "If Funding Source is 002 (External Source), then Funding Reference Code is required",
     "condition": "Funding_Source == '002'",
     "assertion": "Funding_Reference_Code is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R014",
+    "rule_id": "CF_R014",
     "description": "If Currency is not EGP, then Currency in EGP must be reported",
     "condition": "Currency != 'EGP'",
     "assertion": "Currency_in_EGP is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R015",
+    "rule_id": "CF_R015",
     "description": "If Currency is not EGP, then Credit Limit/Approval Amount in EGP must be reported",
     "condition": "Currency != 'EGP'",
     "assertion": "Credit_Limit_Approval_Amount_in_EGP is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R016",
+    "rule_id": "CF_R016",
     "description": "If Currency is not EGP, then Balance in EGP must be reported",
     "condition": "Currency != 'EGP'",
     "assertion": "Balance_in_EGP is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R017",
+    "rule_id": "CF_R017",
     "description": "If Securitization Indicator is 001 or 002, then Securitization Amount must be reported",
     "condition": "Securitization_Indicator in ['001', '002']",
     "assertion": "Securitization_Amount is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R018",
+    "rule_id": "CF_R018",
     "description": "If Securitization Indicator is 001 or 002, then Issuance Date must be reported",
     "condition": "Securitization_Indicator in ['001', '002']",
     "assertion": "Issuance_Date is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R019",
+    "rule_id": "CF_R019",
     "description": "If Securitization Indicator is 001 or 002, then Securitization Tenor must be reported",
     "condition": "Securitization_Indicator in ['001', '002']",
     "assertion": "Securitization_Tenor is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R020",
+    "rule_id": "CF_R020",
     "description": "If Securitization Indicator is 001 or 002, then Issuance No must be reported",
     "condition": "Securitization_Indicator in ['001', '002']",
     "assertion": "Issuance_No is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R021",
+    "rule_id": "CF_R021",
     "description": "If Securitization Indicator is 001 or 002, then Issuer must be reported",
     "condition": "Securitization_Indicator in ['001', '002']",
     "assertion": "Issuer is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R022",
+    "rule_id": "CF_R022",
     "description": "If Liability Indicator is 004, 010, 011, 012, 013, 014, or 016, then Borrower Identification Code must be reported",
     "condition": "Liability_Indicator in ['004', '010', '011', '012', '013', '014', '016']",
     "assertion": "Borrower_Identification_Code is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R023",
+    "rule_id": "CF_R023",
     "description": "If Borrower Identification Code is reported, then Borrower Identification Issuing Authority is required",
     "condition": "Borrower_Identification_Code is not None",
     "assertion": "Borrower_Identification_Issuing_Authority is not None",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R024",
+    "rule_id": "CF_R024",
     "description": "If Collateral Type 3 is reported it should be 402",
     "condition": "Collateral_Type_3 is not None and Collateral_Type_3 != '402'",
     "assertion": "Collateral_Type_3 == '402'",
     "severity": "ERROR"
   },
   {
-    "rule_id": "R025",
+    "rule_id": "CF_R025",
     "description": "Make sure Segment_Identifier is CNCF",
     "assertion": "Segment_Identifier == 'CNCF'",
     "severity": "ERROR"
