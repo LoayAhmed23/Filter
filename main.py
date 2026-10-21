@@ -8,10 +8,8 @@ Examples:
     python main.py report_a.xlsx --schema schemas/file_a.yaml --output errors.xlsx
     python main.py report_a.xlsx --schema schemas/file_a.yaml --rules rules/cross_field_rules.yaml
 """
-from __future__ import annotations
 
 import argparse
-import logging
 import sys
 from pathlib import Path
 
@@ -52,19 +50,8 @@ def main() -> int:
         default=None,
         help="Output file for the error report (.xlsx or .json).",
     )
-    parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Enable verbose logging.",
-    )
 
     args = parser.parse_args()
-
-    # Setup logging
-    logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    )
 
     # Run validation
     errors = validate_file(

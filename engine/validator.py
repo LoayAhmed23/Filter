@@ -5,7 +5,6 @@ instead of row-by-row Python iteration.
 """
 from __future__ import annotations
 
-import logging
 import re
 import time
 from pathlib import Path
@@ -23,8 +22,6 @@ from engine.models import (
 )
 from engine.parser import parse_excel
 from engine.schema_loader import load_all_catalogs, load_cross_field_rules, load_file_schema
-
-logger = logging.getLogger(__name__)
 
 # Safe builtins exposed to cross-field rule expressions
 _SAFE_BUILTINS = {"int": int, "str": str}
@@ -86,7 +83,7 @@ def validate_file(
 
     t0 = time.perf_counter()
 
-    logger.info("Layer 1: Parsing '%s'...", file_name)
+    print(f"Layer 1: Parsing '{file_name}'...")
     df, parse_errors = parse_excel(file_path, schema)
     all_errors.extend(parse_errors)
 
@@ -95,7 +92,7 @@ def validate_file(
         return all_errors
 
     n_rows = len(df)
-    logger.info("Loaded %d rows. Starting vectorized validation...", n_rows)
+    print(f"Loaded {n_rows} rows. Starting vectorized validation...")
 
     # Build column mapping: field_name -> column header (only for present columns)
     col_map: dict[str, str] = {}
@@ -107,7 +104,7 @@ def validate_file(
     excel_rows = np.arange(n_rows, dtype=np.int64) + schema.data_start_row
 
     # ── Layer 2 & 3: Vectorized field-level + catalog checks ──
-    logger.info("Layer 2-3: Field-level + catalog validation...")
+    print("Layer 2-3: Field-level + catalog validation...")
     validation_errors = _validate_fields(
         df, schema.fields, col_map, excel_rows, file_name, sheet,
         compiled_patterns, catalogs,
@@ -115,7 +112,7 @@ def validate_file(
     all_errors.extend(validation_errors)
 
     # ── Layer 4: Group checks (vectorized) ──
-    logger.info("Layer 4: Group validation...")
+    print("Layer 4: Group validation...")
     group_errors = _validate_groups(
         df, schema, col_map, excel_rows, file_name, sheet,
     )
@@ -123,8 +120,7 @@ def validate_file(
 
     # ── Layer 5: Cross-field checks ──
     if cross_field_rules:
-        logger.info("Layer 5: Cross-field validation (%d rules)...",
-                    len(cross_field_rules))
+        print(f"Layer 5: Cross-field validation ({len(cross_field_rules)} rules)...")
         cross_field_errors = _validate_cross_fields(
             df, schema.fields, col_map, excel_rows, file_name, sheet,
             cross_field_rules, compiled_conditions, compiled_assertions,
@@ -132,9 +128,8 @@ def validate_file(
         all_errors.extend(cross_field_errors)
 
     elapsed = time.perf_counter() - t0
-    logger.info(
-        "Validation complete for '%s': %d error(s) found in %.2fs.",
-        file_name, len(all_errors), elapsed,
+    print(
+        f"Validation complete for '{file_name}': {len(all_errors)} error(s) found in {elapsed:.2f}s."
     )
     return all_errors
 
@@ -298,9 +293,8 @@ def _validate_fields(
                             actual_value=val,
                         ))
             else:
-                logger.warning(
-                    "Catalog '%s' referenced by field '%s' not found.",
-                    field.catalog, field.name,
+                print(
+                    f"Warning: Catalog '{field.catalog}' referenced by field '{field.name}' not found."
                 )
 
     return errors

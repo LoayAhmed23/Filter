@@ -35,7 +35,6 @@ python main.py data.xlsx \
 | `-r, --rules` | Path to cross-field rules file (`.json` or `.yaml`) |
 | `-c, --catalogs` | Directory with catalog CSVs (default: `catalogs/`) |
 | `-o, --output` | Path to export error report (`.xlsx`) |
-| `-v, --verbose` | Enable debug logging |
 
 Exits with `0` on clean run (or warnings only), and `1` if any validation errors are detected.
 
