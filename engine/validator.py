@@ -24,7 +24,7 @@ from engine.parser import parse_excel
 from engine.schema_loader import load_all_catalogs, load_cross_field_rules, load_file_schema
 
 # Safe builtins exposed to cross-field rule expressions
-_SAFE_BUILTINS = {"int": int, "str": str}
+_SAFE_BUILTINS = {"int": int, "str": str, "len": len}
 
 
 def validate_file(
@@ -231,8 +231,26 @@ def _validate_fields(
             continue
 
         # ── Length check ──
-        if field.length is not None:
-            str_lens = check_str_series.str.len()
+        str_lens = check_str_series.str.len()
+        if field.min_length is not None:
+            len_fail = (str_lens < field.min_length) | (str_lens > field.length)
+            if len_fail.any():
+                fail_rows = check_excel_rows[len_fail.values]
+                fail_vals = check_str_series[len_fail].values
+                fail_lens = str_lens[len_fail].values
+                for row, val, actual_len in zip(fail_rows, fail_vals, fail_lens):
+                    errors.append(ValidationError(
+                        file_name=file_name, sheet=sheet, row=int(row),
+                        field_name=field.name, rule_id="LENGTH",
+                        severity=Severity.ERROR,
+                        message=(
+                            f"Field '{field.name}' length must be between "
+                            f"{field.min_length} and {field.length} characters (actual: {int(actual_len)})."
+                        ),
+                        actual_value=val,
+                        expected=f"between {field.min_length} and {field.length} characters",
+                    ))
+        else:
             len_fail = str_lens != field.length
             if len_fail.any():
                 fail_rows = check_excel_rows[len_fail.values]

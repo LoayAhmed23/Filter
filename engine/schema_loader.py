@@ -32,13 +32,17 @@ def load_file_schema(path: Path) -> FileSchema:
 
     fields = []
     for f in raw.get("fields", []):
+        if "length" not in f or f["length"] is None:
+            field_name = f.get("name", f.get("column", "unknown"))
+            raise ValueError(f"Field '{field_name}' in schema '{path}' is missing required attribute 'length'.")
         fields.append(
             FieldSchema(
                 name=f["name"],
                 column=str(f["column"]),
                 data_type=f.get("data_type", "string"),
                 category=f.get("category", "optional"),
-                length=f.get("length"),
+                length=int(f["length"]),
+                min_length=f.get("min_length"),
                 pattern=f.get("pattern"),
                 catalog=f.get("catalog"),
                 date_format=f.get("date_format"),
