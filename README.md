@@ -16,15 +16,36 @@ pip install -r requirements.txt
 
 ## Usage
 
+### Credit Facility (CF)
+
 ```bash
 # Basic validation
-python main.py data.xlsx -s schemas/CF_schema.json
+python main.py CF_data.xlsx -s schemas/CF_schema.json
 
-# Full check with business rules and Excel report export
-python main.py data.xlsx \
+# With cross-field business rules
+python main.py CF_data.xlsx -s schemas/CF_schema.json -r rules/cross_field_rules_CF.json
+
+# Full check with Excel error report export
+python main.py CF_data.xlsx \
   -s schemas/CF_schema.json \
   -r rules/cross_field_rules_CF.json \
-  -o errors.xlsx
+  -o CF_errors.xlsx
+```
+
+### Consumer (CS)
+
+```bash
+# Basic validation
+python main.py CS_data.xlsx -s schemas/CS_schema.json
+
+# With cross-field business rules
+python main.py CS_data.xlsx -s schemas/CS_schema.json -r rules/cross_field_rules_CS.json
+
+# Full check with Excel error report export
+python main.py CS_data.xlsx \
+  -s schemas/CS_schema.json \
+  -r rules/cross_field_rules_CS.json \
+  -o CS_errors.xlsx
 ```
 
 ### Options
